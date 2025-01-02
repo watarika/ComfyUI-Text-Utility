@@ -25,7 +25,7 @@ overwriteをFalseにするとファイルが存在した場合は何も行いま
 
 コメントを削除します。行コメントとブロックコメントに対応しています。
 
-
+![image](https://github.com/user-attachments/assets/57e2abc6-3858-4599-ad93-70ca1b806a60)
 
 - line_comment : 行コメントを開始する文字列（デフォルト：//）
 - block_comment_start : ブロックコメントを開始する文字列（デフォルト：/*）
