@@ -20,3 +20,15 @@ If the directory does not exist, it is created.
 
 If overwrite is set to True, overwrites the file.
 If overwrite is False, no action is taken if the file exists.
+
+## Remove Comments
+
+Delete comment.Line comments and block comments are supported.
+
+
+
+- text : The string from which comments are removed.
+- line_comment : The string used to start a single line comment.
+- block_comment_start : The string used to start a block comment.
+- block_comment_end : The string used to end a block comment.
+- remove_blank_lines : If True, remove all blank lines from the string.

@@ -20,3 +20,14 @@
 
 overwriteをTrueにすると上書き保存します。
 overwriteをFalseにするとファイルが存在した場合は何も行いません。
+
+## Remove Comments
+
+コメントを削除します。行コメントとブロックコメントに対応しています。
+
+
+
+- line_comment : 行コメントを開始する文字列（デフォルト：//）
+- block_comment_start : ブロックコメントを開始する文字列（デフォルト：/*）
+- block_comment_end : ブロックコメントを終了する文字列（デフォルト：*/）
+- remove_blank_lines : Trueの場合、文字列からすべての空行を削除する（デフォルト：True）
