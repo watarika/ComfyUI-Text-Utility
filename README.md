@@ -25,10 +25,9 @@ If overwrite is False, no action is taken if the file exists.
 
 Delete comment.Line comments and block comments are supported.
 
+![image](https://github.com/user-attachments/assets/57e2abc6-3858-4599-ad93-70ca1b806a60)
 
-
-- text : The string from which comments are removed.
-- line_comment : The string used to start a single line comment.
-- block_comment_start : The string used to start a block comment.
-- block_comment_end : The string used to end a block comment.
-- remove_blank_lines : If True, remove all blank lines from the string.
+- line_comment : The string used to start a single line comment. (default: //)
+- block_comment_start : The string used to start a block comment. (default: /*)
+- block_comment_end : The string used to end a block comment. (default: */)
+- remove_blank_lines : If True, remove all blank lines from the string. (default: True)
