@@ -27,7 +27,10 @@ Delete comment.Line comments and block comments are supported.
 
 ![image](https://github.com/user-attachments/assets/57e2abc6-3858-4599-ad93-70ca1b806a60)
 
-- line_comment : The string used to start a single line comment. (default: //)
-- block_comment_start : The string used to start a block comment. (default: /*)
-- block_comment_end : The string used to end a block comment. (default: */)
-- remove_blank_lines : If True, remove all blank lines from the string. (default: True)
+- line_comment : The string used to start a single line comment (default: //)
+- block_comment_start : The string used to start a block comment (default: /*)
+- block_comment_end : The string used to end a block comment (default: */)
+- remove_linefeed : remove linefeed or not (default: No)
+  - No : do not remove
+  - All : remove all
+  - Blank Lines Only : remove blank lines only

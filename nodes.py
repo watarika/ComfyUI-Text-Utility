@@ -77,7 +77,11 @@ class RemoveCommentsNode:
                 "line_comment": ("STRING", {"multiline": False, "default": "//"}),
                 "block_comment_start": ("STRING", {"multiline": False, "default": "/*"}),
                 "block_comment_end": ("STRING", {"multiline": False, "default": "*/"}),
-                "remove_blank_lines": ("BOOLEAN", {"default": True}),
+                "remove_linefeed": ([
+                    "No",
+                    "All",
+                    "Blank Lines Only",
+                ],),
             }
         }
         
@@ -87,30 +91,9 @@ class RemoveCommentsNode:
     FUNCTION = 'remove_comments'
     CATEGORY = "text"
 
-    def remove_comments(self, text, line_comment, block_comment_start, block_comment_end, remove_blank_lines):
+    def remove_comments(self, text, line_comment, block_comment_start, block_comment_end, remove_linefeed):
 
         # block_comment_startとblock_comment_endの間の文字を削除（複数行コメント）
-        """
-        Remove comments from a given string.
-
-        Parameters
-        ----------
-        text : str
-            The string from which comments are removed.
-        line_comment : str
-            The string used to start a single line comment.
-        block_comment_start : str
-            The string used to start a block comment.
-        block_comment_end : str
-            The string used to end a block comment.
-        remove_blank_lines : bool
-            If True, remove all blank lines from the string.
-
-        Returns
-        -------
-        str
-            The string with all comments removed.
-        """
         while block_comment_start in text:
             start = text.find(block_comment_start)
             end = text.find(block_comment_end)
@@ -125,8 +108,12 @@ class RemoveCommentsNode:
             text = text[:start] + text[end:]
 
         # 空行を削除
-        if remove_blank_lines:
+        if remove_linefeed == "Blank Lines Only":
             text = "\n".join([line for line in text.split("\n") if line.strip()])
+
+        # 改行を削除
+        elif remove_linefeed == "All":
+            text = text.replace("\n", "")
 
         return(text, )
 

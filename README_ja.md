@@ -30,4 +30,7 @@ overwriteをFalseにするとファイルが存在した場合は何も行いま
 - line_comment : 行コメントを開始する文字列（デフォルト：//）
 - block_comment_start : ブロックコメントを開始する文字列（デフォルト：/*）
 - block_comment_end : ブロックコメントを終了する文字列（デフォルト：*/）
-- remove_blank_lines : Trueの場合、文字列からすべての空行を削除する（デフォルト：True）
+- remove_linefeed : 改行を削除するかどうか（デフォルト：No）
+  - No : 削除しない
+  - All : すべて削除する
+  - Blank Lines Only : 空行のみ削除する
