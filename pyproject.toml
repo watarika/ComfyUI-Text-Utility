@@ -1,0 +1,14 @@
+[project]
+name = "text-utility"
+description = "Custom node to handle text. Save and load text files. Remove comments from text."
+version = "1.0.0"
+license = {file = "LICENSE"}
+
+[project.urls]
+Repository = "https://github.com/watarika/ComfyUI-Text-Utility"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = "watarika"
+DisplayName = "ComfyUI-Text-Utility"
+Icon = ""
