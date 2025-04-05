@@ -39,6 +39,8 @@ Delete comment.Line comments and block comments are supported.
 
 Extracts a single line from multiple lines of text entered in a text box.
 
+![image](https://github.com/user-attachments/assets/43ab3794-2cc9-4d72-a7cb-29e188edba16)
+
 If batch execution is done using batch count, it will take out one line at a time, incrementing from the start line each time it is executed.
 It can be used like Webui's Prompts from file or textbox.
 
