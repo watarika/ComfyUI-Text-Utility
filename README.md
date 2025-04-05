@@ -34,3 +34,14 @@ Delete comment.Line comments and block comments are supported.
   - No : do not remove
   - All : remove all
   - Blank Lines Only : remove blank lines only
+
+## Strings from textbox
+
+Extracts a single line from multiple lines of text entered in a text box.
+
+If batch execution is done using batch count, it will take out one line at a time, incrementing from the start line each time it is executed.
+It can be used like Webui's Prompts from file or textbox.
+
+- start: the line to start with
+- text: Source text (multiple lines) to be extracted
+

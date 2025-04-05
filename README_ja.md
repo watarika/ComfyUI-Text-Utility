@@ -34,3 +34,14 @@ overwriteをFalseにするとファイルが存在した場合は何も行いま
   - No : 削除しない
   - All : すべて削除する
   - Blank Lines Only : 空行のみ削除する
+
+## Strings from textbox
+
+テキストボックスに入力した複数行のテキストから1行を取り出します。
+
+バッチカウントを使ってバッチ実行した場合、実行するたびにstart行からインクリメントしながら1行ずつ取り出します。  
+Webui の Prompts from file or textbox のような使い方ができます。
+
+- start: 開始する行
+- text: 抽出する元となるテキスト（複数行）
+

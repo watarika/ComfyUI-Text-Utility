@@ -118,14 +118,42 @@ class RemoveCommentsNode:
         return(text, )
 
 
+class StringsFromTextboxNode:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "start": ("INT", {"default": 1, "min": 0, "step": 1}),
+                "count": ("INT", {"default": 0, "min": 0, "step": 1}),
+                "text": ("STRING", {"multiline": True, "default": ""}),
+            }
+        }
+        
+    RETURN_TYPES = ("STRING", )
+    RETURN_NAMES = ("string", )
+    OUTPUT_IS_LIST = (False, )
+    FUNCTION = 'extract_line'
+    CATEGORY = "text"
+
+    def extract_line(self, start, count, text):
+        lines = text.split('\n')
+        if count <= len(lines):
+            return (lines[count - 1], )
+        return ("", )
+
 NODE_CLASS_MAPPINGS = {
     "LoadTextFile": LoadTextFileNode,
     "SaveTextFile": SaveTextFileNode,
     "RemoveComments": RemoveCommentsNode,
+    "StringsFromTextbox": StringsFromTextboxNode,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "LoadTextFile": "Load Text File",
     "SaveTextFile": "Save Text File",
     "RemoveComments": "Remove Comments",
+    "StringsFromTextbox": "Strings from textbox",
 }
