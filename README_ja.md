@@ -39,6 +39,8 @@ overwriteをFalseにするとファイルが存在した場合は何も行いま
 
 テキストボックスに入力した複数行のテキストから1行を取り出します。
 
+![image](https://github.com/user-attachments/assets/43ab3794-2cc9-4d72-a7cb-29e188edba16)
+
 バッチカウントを使ってバッチ実行した場合、実行するたびにstart行からインクリメントしながら1行ずつ取り出します。  
 Webui の Prompts from file or textbox のような使い方ができます。
 
