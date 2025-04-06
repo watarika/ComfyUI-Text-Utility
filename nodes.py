@@ -121,30 +121,41 @@ class RemoveCommentsNode:
 
 
 class StringsFromTextboxNode:
-    def __init__(self):
-        pass
-
     @classmethod
     def INPUT_TYPES(s):
         return {
             "required": {
                 "text": ("STRING", {"multiline": True, "default": ""}),
                 "start": ("INT", {"default": 1, "min": 0, "step": 1}),
-                "count": ("INT", {"default": 0, "min": 0, "step": 1}),
+                "mode": (["Fixed", "Continued",], {"default": "Continued", "tooltip": "If Fixed, start is left unchanged; if Continued, start is updated to the number at which the process has progressed."}),
+                "counter": ("INT", {"default": 0, "min": 0, "step": 1}),
             },
         }
         
-    RETURN_TYPES = ("STRING", )
-    RETURN_NAMES = ("string", )
+    RETURN_TYPES = ("STRING", "STRING", )
+    RETURN_NAMES = ("string", "counter", )
     OUTPUT_IS_LIST = (False, )
-    FUNCTION = 'extract_line'
+    FUNCTION = 'doit'
     CATEGORY = "text"
 
-    def extract_line(self, text, start, count):
+    @staticmethod
+    def extract_line(text, start, mode, counter):
+        if mode == "Fixed":
+            # Fixed mode: start remains unchanged
+            target_line = start + counter - 1
+        else:
+            # Continued mode: start is updated to the number at which the process has progressed
+            target_line = start - 1
+
         lines = text.split('\n')
-        if count <= len(lines):
-            return (lines[count - 1], )
-        return ("", )
+        if target_line <= len(lines):
+            return lines[target_line - 1]
+
+        return ""
+
+    def doit(self, text, start, mode, counter):
+        result = StringsFromTextboxNode.extract_line(text, start, mode, counter)
+        return (result, )
 
 
 class PromptsFromTextboxNode:
@@ -153,26 +164,22 @@ class PromptsFromTextboxNode:
         return {
             "required": {
                 "wildcard_text": ("STRING", {"multiline": True, "default": ""}),
-                "start": ("INT", {"default": 1, "min": 1, "step": 1}),
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "tooltip": "Determines the random seed to be used for wildcard processing."}),
-                "count": ("INT", {"default": 0, "min": 0, "step": 1}),
+                "start": ("INT", {"default": 1, "min": 0, "step": 1}),
+                "mode": (["Fixed", "Continued",], {"default": "Continued", "tooltip": "If Fixed, start is left unchanged; if Continued, start is updated to the number at which the process has progressed."}),
+                "counter": ("INT", {"default": 0, "min": 0, "step": 1}),
             },
         }
 
     CATEGORY = "text"
 
     RETURN_TYPES = ("STRING", )
+    RETURN_NAMES = ("prompt", )
     FUNCTION = "doit"
 
-    def doit(self, start, wildcard_text, seed, count):
-        # Extract the lines from the input text
-        lines = wildcard_text.split('\n')
-        if count <= len(lines):
-            text = lines[count - 1]
-            # Wildcard processing
-            result = impact.wildcards.process(text, seed)
-        else:
-            result = ""
+    def doit(self, wildcard_text, seed, start, mode, counter):
+        target_string = StringsFromTextboxNode.extract_line(wildcard_text, start, mode, counter)
+        result = impact.wildcards.process(target_string, seed)
         return (result, )
 
 NODE_CLASS_MAPPINGS = {

@@ -12,15 +12,25 @@ app.registerExtension({
             nodeType.prototype.onNodeCreated = function () {
                 const r = origOnNodeCreated ? origOnNodeCreated.apply(this) : undefined;
                 const start = this.widgets.find((w) => w.name === "start");
-                const count = this.widgets.find((w) => w.name === "count");
-                let counter = 0;
-                //count.type = "converted-widget"; // hidden
-                count.serializeValue = () => { 
-                    counter++;
-                    count.value = counter;
-                    return start.value + counter; 
+                const mode = this.widgets.find((w) => w.name === "mode");
+                const counter = this.widgets.find((w) => w.name === "counter");
+                let index = 0;
+                counter.type = "converted-widget"; // hidden
+
+                start.serializeValue = () => {
+                    if (mode.value === "Continued") {
+                        // Continued mode
+                        start.value = start.value + 1; 
+                    }
+                    return start.value;
                 }
-                api.addEventListener("promptQueued", () => { counter = 0; }); // reset
+
+                counter.serializeValue = () => { 
+                    index++;
+                    counter.value = index;
+                    return index; 
+                }
+                api.addEventListener("promptQueued", () => { index = 0; }); // reset
                 return r;
             }
         }
