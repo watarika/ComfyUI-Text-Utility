@@ -133,8 +133,8 @@ class StringsFromTextboxNode:
         }
         
     RETURN_TYPES = ("STRING", "STRING", )
-    RETURN_NAMES = ("string", "counter", )
-    OUTPUT_IS_LIST = (False, )
+    RETURN_NAMES = ("prompt", "counter", )
+    OUTPUT_IS_LIST = (False, False, )
     FUNCTION = 'doit'
     CATEGORY = "text"
 
@@ -155,7 +155,7 @@ class StringsFromTextboxNode:
 
     def doit(self, text, start, mode, counter):
         result = StringsFromTextboxNode.extract_line(text, start, mode, counter)
-        return (result, )
+        return (result, str(counter), )
 
 
 class PromptsFromTextboxNode:
@@ -173,14 +173,15 @@ class PromptsFromTextboxNode:
 
     CATEGORY = "text"
 
-    RETURN_TYPES = ("STRING", )
-    RETURN_NAMES = ("prompt", )
+    RETURN_TYPES = ("STRING", "STRING", )
+    RETURN_NAMES = ("prompt", "counter", )
+    OUTPUT_IS_LIST = (False, False, )
     FUNCTION = "doit"
 
     def doit(self, wildcard_text, seed, start, mode, counter):
         target_string = StringsFromTextboxNode.extract_line(wildcard_text, start, mode, counter)
         result = impact.wildcards.process(target_string, seed)
-        return (result, )
+        return (result, str(counter), )
 
 NODE_CLASS_MAPPINGS = {
     "LoadTextFile": LoadTextFileNode,
