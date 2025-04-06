@@ -37,13 +37,33 @@ Delete comment.Line comments and block comments are supported.
 
 ## Strings from textbox
 
-Extracts a single line from multiple lines of text entered in a text box.
+Extracts a single line from multiple lines of text entered in a textbox.
 
 ![image](https://github.com/user-attachments/assets/43ab3794-2cc9-4d72-a7cb-29e188edba16)
 
-If batch execution is done using batch count, it will take out one line at a time, incrementing from the start line each time it is executed.
-It can be used like Webui's Prompts from file or textbox.
+When executed in batch using batch count, it takes out one line at a time, incrementing from the start line each time it is executed.
+You can use it like Webui's Prompts from file or textbox.
 
-- start: the line to start with
+If you want to use wildcards, use "Prompts from textbox".
+
 - text: Source text (multiple lines) to be extracted
+- start: The line to start with
+- mode: Whether to update each time start is processed (default: Continued)
+  - Fixed : do not update
+  - Continued : updated
+
+## Prompts from textbox
+
+"Strings from textbox" with wildcard support.
+
+![image](https://github.com/user-attachments/assets/43ab3794-2cc9-4d72-a7cb-29e188edba16)
+
+Internally calls the wildcard processing of [ComfyUI-Impact-Pack](https://github.com/ltdrdata/ComfyUI-Impact-Pack).Therefore, ComfyUI-Impact-Pack must be installed.
+
+- wildcard_text: The source wildcard text (multiple lines) to be extracted
+- seed: Seed to use for wildcard processing
+- start: The line to start with
+- mode: Whether to update each time start is processed (default: Continued)
+  - Fixed : do not update
+  - Continued : updated
 

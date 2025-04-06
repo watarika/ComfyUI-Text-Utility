@@ -44,6 +44,26 @@ overwriteをFalseにするとファイルが存在した場合は何も行いま
 バッチカウントを使ってバッチ実行した場合、実行するたびにstart行からインクリメントしながら1行ずつ取り出します。  
 Webui の Prompts from file or textbox のような使い方ができます。
 
-- start: 開始する行
+ワイルドカードを使用する場合は「Prompts from textbox」を使ってください。
+
 - text: 抽出する元となるテキスト（複数行）
+- start: 開始する行
+- mode: startを処理するたびに更新するかどうか（デフォルト：Continued）
+  - Fixed : 更新しない
+  - Continued : 更新する
+
+## Prompts from textbox
+
+ワイルドカードに対応した "Strings from textbox" です。
+
+![image](https://github.com/user-attachments/assets/43ab3794-2cc9-4d72-a7cb-29e188edba16)
+
+内部的に [ComfyUI-Impact-Pack](https://github.com/ltdrdata/ComfyUI-Impact-Pack) のワイルドカード処理を呼び出します。そのため、ComfyUI-Impact-Pack をインストールしておく必要があります。
+
+- wildcard_text: 抽出する元となるワイルドカードテキスト（複数行）
+- seed: ワイルドカード処理に使用するSeed
+- start: 開始する行
+- mode: startを処理するたびに更新するかどうか（デフォルト：Continued）
+  - Fixed : 更新しない
+  - Continued : 更新する
 
