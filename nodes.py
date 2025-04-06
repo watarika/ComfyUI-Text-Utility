@@ -1,4 +1,6 @@
 import os
+import impact
+import impact.wildcards
 
 class LoadTextFileNode:
 
@@ -126,10 +128,10 @@ class StringsFromTextboxNode:
     def INPUT_TYPES(s):
         return {
             "required": {
+                "text": ("STRING", {"multiline": True, "default": ""}),
                 "start": ("INT", {"default": 1, "min": 0, "step": 1}),
                 "count": ("INT", {"default": 0, "min": 0, "step": 1}),
-                "text": ("STRING", {"multiline": True, "default": ""}),
-            }
+            },
         }
         
     RETURN_TYPES = ("STRING", )
@@ -138,17 +140,47 @@ class StringsFromTextboxNode:
     FUNCTION = 'extract_line'
     CATEGORY = "text"
 
-    def extract_line(self, start, count, text):
+    def extract_line(self, text, start, count):
         lines = text.split('\n')
         if count <= len(lines):
             return (lines[count - 1], )
         return ("", )
+
+
+class PromptsFromTextboxNode:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "wildcard_text": ("STRING", {"multiline": True, "default": ""}),
+                "start": ("INT", {"default": 1, "min": 1, "step": 1}),
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "tooltip": "Determines the random seed to be used for wildcard processing."}),
+                "count": ("INT", {"default": 0, "min": 0, "step": 1}),
+            },
+        }
+
+    CATEGORY = "text"
+
+    RETURN_TYPES = ("STRING", )
+    FUNCTION = "doit"
+
+    def doit(self, start, wildcard_text, seed, count):
+        # Extract the lines from the input text
+        lines = wildcard_text.split('\n')
+        if count <= len(lines):
+            text = lines[count - 1]
+            # Wildcard processing
+            result = impact.wildcards.process(text, seed)
+        else:
+            result = ""
+        return (result, )
 
 NODE_CLASS_MAPPINGS = {
     "LoadTextFile": LoadTextFileNode,
     "SaveTextFile": SaveTextFileNode,
     "RemoveComments": RemoveCommentsNode,
     "StringsFromTextbox": StringsFromTextboxNode,
+    "PromptsFromTextbox": PromptsFromTextboxNode,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -156,4 +188,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "SaveTextFile": "Save Text File",
     "RemoveComments": "Remove Comments",
     "StringsFromTextbox": "Strings from textbox",
+    "PromptsFromTextbox": "Prompts from textbox",
 }

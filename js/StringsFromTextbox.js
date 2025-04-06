@@ -7,16 +7,20 @@ import { api } from "../../scripts/api.js";
 app.registerExtension({
     name: "StringsFromTextbox",
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
-        if (nodeData.name === "StringsFromTextbox") {
+        if (nodeData.name === "StringsFromTextbox" || nodeData.name === "PromptsFromTextbox") {
             const origOnNodeCreated = nodeType.prototype.onNodeCreated;
             nodeType.prototype.onNodeCreated = function () {
                 const r = origOnNodeCreated ? origOnNodeCreated.apply(this) : undefined;
                 const start = this.widgets.find((w) => w.name === "start");
                 const count = this.widgets.find((w) => w.name === "count");
-                let counter = start.value;
-                count.type = "converted-widget"; // hidden
-                count.serializeValue = () => { return counter++; }
-                api.addEventListener("promptQueued", () => { counter = start.value; }); // reset
+                let counter = 0;
+                //count.type = "converted-widget"; // hidden
+                count.serializeValue = () => { 
+                    counter++;
+                    count.value = counter;
+                    return start.value + counter; 
+                }
+                api.addEventListener("promptQueued", () => { counter = 0; }); // reset
                 return r;
             }
         }
