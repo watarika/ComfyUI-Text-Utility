@@ -39,7 +39,7 @@ overwriteをFalseにするとファイルが存在した場合は何も行いま
 
 テキストボックスに入力した複数行のテキストから1行を取り出します。
 
-![image](https://github.com/user-attachments/assets/43ab3794-2cc9-4d72-a7cb-29e188edba16)
+![image](https://github.com/user-attachments/assets/a576e017-73aa-4eae-a9c7-af888b90b35c)
 
 バッチカウントを使ってバッチ実行した場合、実行するたびにstart行からインクリメントしながら1行ずつ取り出します。  
 Webui の Prompts from file or textbox のような使い方ができます。
@@ -56,7 +56,7 @@ Webui の Prompts from file or textbox のような使い方ができます。
 
 ワイルドカードに対応した "Strings from textbox" です。
 
-![image](https://github.com/user-attachments/assets/43ab3794-2cc9-4d72-a7cb-29e188edba16)
+![image](https://github.com/user-attachments/assets/8b34b576-c27e-4c68-9ec7-81caa52ae611)
 
 内部的に [ComfyUI-Impact-Pack](https://github.com/ltdrdata/ComfyUI-Impact-Pack) のワイルドカード処理を呼び出します。そのため、ComfyUI-Impact-Pack をインストールしておく必要があります。
 
