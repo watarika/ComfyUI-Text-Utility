@@ -39,7 +39,7 @@ Delete comment.Line comments and block comments are supported.
 
 Extracts a single line from multiple lines of text entered in a textbox.
 
-![image](https://github.com/user-attachments/assets/43ab3794-2cc9-4d72-a7cb-29e188edba16)
+![image](https://github.com/user-attachments/assets/a576e017-73aa-4eae-a9c7-af888b90b35c)
 
 When executed in batch using batch count, it takes out one line at a time, incrementing from the start line each time it is executed.
 You can use it like Webui's Prompts from file or textbox.
@@ -56,7 +56,7 @@ If you want to use wildcards, use "Prompts from textbox".
 
 "Strings from textbox" with wildcard support.
 
-![image](https://github.com/user-attachments/assets/43ab3794-2cc9-4d72-a7cb-29e188edba16)
+![image](https://github.com/user-attachments/assets/8b34b576-c27e-4c68-9ec7-81caa52ae611)
 
 Internally calls the wildcard processing of [ComfyUI-Impact-Pack](https://github.com/ltdrdata/ComfyUI-Impact-Pack).Therefore, ComfyUI-Impact-Pack must be installed.
 
