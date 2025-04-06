@@ -60,6 +60,8 @@ If you want to use wildcards, use "Prompts from textbox".
 
 Internally calls the wildcard processing of [ComfyUI-Impact-Pack](https://github.com/ltdrdata/ComfyUI-Impact-Pack).Therefore, ComfyUI-Impact-Pack must be installed.
 
+For wildcards, see [ImpactWildcard](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/ImpactWildcard.md).
+
 - wildcard_text: The source wildcard text (multiple lines) to be extracted
 - seed: Seed to use for wildcard processing
 - start: The line to start with

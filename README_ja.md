@@ -60,6 +60,8 @@ Webui の Prompts from file or textbox のような使い方ができます。
 
 内部的に [ComfyUI-Impact-Pack](https://github.com/ltdrdata/ComfyUI-Impact-Pack) のワイルドカード処理を呼び出します。そのため、ComfyUI-Impact-Pack をインストールしておく必要があります。
 
+ワイルドカードについては [ImpactWildcard](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/ImpactWildcard.md) を参照してください。
+
 - wildcard_text: 抽出する元となるワイルドカードテキスト（複数行）
 - seed: ワイルドカード処理に使用するSeed
 - start: 開始する行
