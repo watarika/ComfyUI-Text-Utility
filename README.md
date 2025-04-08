@@ -65,7 +65,7 @@ For wildcards, see [ImpactWildcard](https://github.com/ltdrdata/ComfyUI-extensio
 - wildcard_text: The source wildcard text (multiple lines) to be extracted
 - seed: Seed to use for wildcard processing
 - start: The line to start with
-- mode: Whether to update each time start is processed (default: Continued)
+- mode: Whether to update each time start is processed (default: Fixed)
   - Fixed : do not update
   - Continued : updated
 

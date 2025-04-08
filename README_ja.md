@@ -65,7 +65,7 @@ Webui の Prompts from file or textbox のような使い方ができます。
 - wildcard_text: 抽出する元となるワイルドカードテキスト（複数行）
 - seed: ワイルドカード処理に使用するSeed
 - start: 開始する行
-- mode: startを処理するたびに更新するかどうか（デフォルト：Continued）
+- mode: startを処理するたびに更新するかどうか（デフォルト：Fixed）
   - Fixed : 更新しない
   - Continued : 更新する
 

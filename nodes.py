@@ -129,7 +129,7 @@ class StringsFromTextboxNode:
             "required": {
                 "text": ("STRING", {"multiline": True, "default": ""}),
                 "start": ("INT", {"default": 1, "min": 0, "step": 1}),
-                "mode": (["Fixed", "Continued",], {"default": "Continued", "tooltip": "If Fixed, start is left unchanged; if Continued, start is updated to the number at which the process has progressed."}),
+                "mode": (["Fixed", "Continued",], {"default": "Fixed", "tooltip": "If Fixed, start is left unchanged; if Continued, start is updated to the number at which the process has progressed."}),
                 "counter": ("INT", {"default": 0, "min": 0, "step": 1}),
             },
         }
@@ -168,7 +168,7 @@ class PromptsFromTextboxNode:
                 "wildcard_text": ("STRING", {"multiline": True, "default": ""}),
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "tooltip": "Determines the random seed to be used for wildcard processing."}),
                 "start": ("INT", {"default": 1, "min": 0, "step": 1}),
-                "mode": (["Fixed", "Continued",], {"default": "Continued", "tooltip": "If Fixed, start is left unchanged; if Continued, start is updated to the number at which the process has progressed."}),
+                "mode": (["Fixed", "Continued",], {"default": "Fixed", "tooltip": "If Fixed, start is left unchanged; if Continued, start is updated to the number at which the process has progressed."}),
                 "counter": ("INT", {"default": 0, "min": 0, "step": 1}),
             },
         }
