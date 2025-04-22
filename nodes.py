@@ -185,12 +185,52 @@ class PromptsFromTextboxNode:
         result = impact.wildcards.process(target_string, seed)
         return (result, str(counter), )
 
+
+class ReplaceVariablesNode:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "text": ("STRING", {"multiline": True, "default": ""}),
+            },
+        }
+
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("replaced_text",)
+    OUTPUT_IS_LIST = (False,)
+    FUNCTION = "replace_variables"
+    CATEGORY = "text"
+
+    @staticmethod
+    def replace_variables(text):
+        import re
+
+        # 変数定義の抽出: $name="value"
+        var_pattern = re.compile(r'\$([a-zA-Z_][a-zA-Z0-9_]*)="([^"]*)"')
+        var_defs = dict(var_pattern.findall(text))
+
+        # 変数定義部分を削除
+        text_wo_defs = var_pattern.sub("", text)
+
+        # 変数参照の置換: $name
+        def replace_var(match):
+            var_name = match.group(1)
+            return var_defs.get(var_name, match.group(0))
+
+        ref_pattern = re.compile(r"\$([a-zA-Z_][a-zA-Z0-9_]*)")
+        replaced_text = ref_pattern.sub(replace_var, text_wo_defs)
+
+        # 先頭・末尾の不要な空白・改行を除去
+        return (replaced_text.strip(),)
+
+
 NODE_CLASS_MAPPINGS = {
     "LoadTextFile": LoadTextFileNode,
     "SaveTextFile": SaveTextFileNode,
     "RemoveComments": RemoveCommentsNode,
     "StringsFromTextbox": StringsFromTextboxNode,
     "PromptsFromTextbox": PromptsFromTextboxNode,
+    "ReplaceVariables": ReplaceVariablesNode,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -199,4 +239,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "RemoveComments": "Remove Comments",
     "StringsFromTextbox": "Strings from textbox",
     "PromptsFromTextbox": "Prompts from textbox",
+    "ReplaceVariables": "Replace Variables",
 }
