@@ -76,5 +76,14 @@ Webui の Prompts from file or textbox のような使い方ができます。
 - 変数定義構文：`$name="値"`（値はダブルクォートで囲む必要があります）
 - 複数の変数定義が可能です。
 - 変数使用構文：`$name`
-- 入力例：`$animal="cat" $color="black" The $color $animal sleeps on the sofa.`
-- 出力例：`The black cat sleeps on the sofa.`
+- 入力例：`$animal="猫" $color="黒い" ソファの上で$color$animalが眠っている。`
+- 出力例：`ソファの上で黒い猫が眠っている。`
+
+## 変更履歴
+
+- v1.3.0 (2025-04-22)
+  - Replace Variables ノードを追加
+- v1.2.0 (2025-04-06)
+  - Prompts from textbox ノードを追加
+- v1.1.0 (2025-04-05)
+  - Strings from textbox ノードを追加

@@ -78,3 +78,12 @@ Replaces variables in the input text using definitions.
 - Variable usage syntax: `$name`
 - Example input: `$animal="cat" $color="black" The $color $animal sleeps on the sofa.`
 - Example output: `The black cat sleeps on the sofa.`
+
+## Changelog
+
+- v1.3.0 (2025-04-22)
+  - Add Replace Variables Node
+- v1.2.0 (2025-04-06)
+  - Add Prompts from textbox Node
+- v1.1.0 (2025-04-05)
+  - Add Strings from textbox Node
