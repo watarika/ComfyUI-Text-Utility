@@ -69,3 +69,12 @@ For wildcards, see [ImpactWildcard](https://github.com/ltdrdata/ComfyUI-extensio
   - Fixed : do not update
   - Continued : updated
 
+## Replace Variables
+
+Replaces variables in the input text using definitions.
+
+- Variable definition syntax: `$name="value"` (value must be enclosed in double quotes)
+- Multiple variables can be defined.
+- Variable usage syntax: `$name`
+- Example input: `$animal="cat" $color="black" The $color $animal sleeps on the sofa.`
+- Example output: `The black cat sleeps on the sofa.`

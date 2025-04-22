@@ -69,3 +69,12 @@ Webui の Prompts from file or textbox のような使い方ができます。
   - Fixed : 更新しない
   - Continued : 更新する
 
+## Replace Variables
+
+入力テキスト内の変数を定義・置換します。
+
+- 変数定義構文：`$name="値"`（値はダブルクォートで囲む必要があります）
+- 複数の変数定義が可能です。
+- 変数使用構文：`$name`
+- 入力例：`$animal="cat" $color="black" The $color $animal sleeps on the sofa.`
+- 出力例：`The black cat sleeps on the sofa.`
