@@ -25,7 +25,7 @@ overwriteをFalseにするとファイルが存在した場合は何も行いま
 
 コメントを削除します。行コメントとブロックコメントに対応しています。
 
-![image](https://github.com/user-attachments/assets/c93ce4e9-3c29-48d7-985c-b4517952b0d4)
+![image](https://github.com/user-attachments/assets/a1d61f3b-f96e-4e9e-a669-f4d722bd473b)
 
 - line_comment : 行コメントを開始する文字列（デフォルト：//）
 - block_comment_start : ブロックコメントを開始する文字列（デフォルト：/*）
@@ -73,6 +73,8 @@ Webui の Prompts from file or textbox のような使い方ができます。
 ## Replace Variables
 
 入力テキスト内の変数を定義・置換します。
+
+![image](https://github.com/user-attachments/assets/87debebe-baac-46f7-ae8b-de2bc3124f3e)
 
 - 変数定義構文：`$name="値"`（値はダブルクォートで囲む必要があります）
 - 複数の変数定義が可能です。
