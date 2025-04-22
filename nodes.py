@@ -3,6 +3,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../ComfyUI-Impact-Pack/modules')))
 import impact
 import impact.wildcards
+import re
 
 class LoadTextFileNode:
 
@@ -86,6 +87,7 @@ class RemoveCommentsNode:
                     "All",
                     "Blank Lines Only",
                 ],),
+                "normalize_commas": ("BOOLEAN", {"default": False}),
             }
         }
         
@@ -95,7 +97,7 @@ class RemoveCommentsNode:
     FUNCTION = 'remove_comments'
     CATEGORY = "text"
 
-    def remove_comments(self, text, line_comment, block_comment_start, block_comment_end, remove_linefeed):
+    def remove_comments(self, text, line_comment, block_comment_start, block_comment_end, remove_linefeed, normalize_commas):
 
         # block_comment_startとblock_comment_endの間の文字を削除（複数行コメント）
         while block_comment_start in text:
@@ -119,7 +121,21 @@ class RemoveCommentsNode:
         elif remove_linefeed == "All":
             text = text.replace("\n", "")
 
+        # カンマ区切り正規化
+        if normalize_commas:
+            text = self._normalize_commas(text)
         return(text, )
+
+    @staticmethod
+    def _normalize_commas(text):
+        # 1. 連続カンマ（カンマ＋空白含む）が2回以上続く部分を「, 」に置換
+        text = re.sub(r'(,\s*){2,}', ', ', text)
+        # 2. カンマ前スペース除去・カンマ後スペース1つ
+        text = re.sub(r'\s*,\s*', ', ', text)
+        # 3. 末尾カンマ・末尾スペース除去
+        text = re.sub(r'(, )+$', '', text)
+        text = text.strip()
+        return text
 
 
 class StringsFromTextboxNode:
@@ -203,8 +219,6 @@ class ReplaceVariablesNode:
 
     @staticmethod
     def replace_variables(text):
-        import re
-
         # 変数定義の抽出: $name="value"
         var_pattern = re.compile(r'\$([a-zA-Z_][a-zA-Z0-9_]*)="([^"]*)"')
         var_defs = dict(var_pattern.findall(text))

@@ -34,6 +34,7 @@ Delete comment.Line comments and block comments are supported.
   - No : do not remove
   - All : remove all
   - Blank Lines Only : remove blank lines only
+- normalize_commas : Normalize commas at word separators and remove extra commas (default: False)
 
 ## Strings from textbox
 
@@ -81,6 +82,8 @@ Replaces variables in the input text using definitions.
 
 ## Changelog
 
+- v1.3.1 (2025-04-22)
+  - Added normalize_commas option to Remove Comments node
 - v1.3.0 (2025-04-22)
   - Add Replace Variables Node
 - v1.2.0 (2025-04-06)

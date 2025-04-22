@@ -34,6 +34,7 @@ overwriteをFalseにするとファイルが存在した場合は何も行いま
   - No : 削除しない
   - All : すべて削除する
   - Blank Lines Only : 空行のみ削除する
+- normalize_commas : 単語区切りのカンマを正規化し、余分なカンマを削除する（デフォルト：False）
 
 ## Strings from textbox
 
@@ -81,6 +82,8 @@ Webui の Prompts from file or textbox のような使い方ができます。
 
 ## 変更履歴
 
+- v1.3.1 (2025-04-22)
+  - Remove Comments ノードに normalize_commas オプションを追加
 - v1.3.0 (2025-04-22)
   - Replace Variables ノードを追加
 - v1.2.0 (2025-04-06)
