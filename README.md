@@ -74,6 +74,8 @@ For wildcards, see [ImpactWildcard](https://github.com/ltdrdata/ComfyUI-extensio
 
 Replaces variables in the input text using definitions.
 
+![image](https://github.com/user-attachments/assets/87debebe-baac-46f7-ae8b-de2bc3124f3e)
+
 - Variable definition syntax: `$name="value"` (value must be enclosed in double quotes)
 - Multiple variables can be defined.
 - Variable usage syntax: `$name`
