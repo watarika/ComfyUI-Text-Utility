@@ -25,7 +25,7 @@ If overwrite is False, no action is taken if the file exists.
 
 Delete comment.Line comments and block comments are supported.
 
-![image](https://github.com/user-attachments/assets/c93ce4e9-3c29-48d7-985c-b4517952b0d4)
+![image](https://github.com/user-attachments/assets/a1d61f3b-f96e-4e9e-a669-f4d722bd473b)
 
 - line_comment : The string used to start a single line comment (default: //)
 - block_comment_start : The string used to start a block comment (default: /*)
