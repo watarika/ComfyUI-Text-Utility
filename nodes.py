@@ -217,17 +217,16 @@ class ReplaceVariablesNode:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("replaced_text",)
     OUTPUT_IS_LIST = (False,)
-    FUNCTION = "replace_variables"
+    FUNCTION = "doit"
     CATEGORY = "text"
 
     @staticmethod
-    def replace_variables(text):
-        # 変数定義の抽出: $name="value"
+    def get_variables(text):
         var_pattern = re.compile(r'\$([a-zA-Z_][a-zA-Z0-9_]*)="([^"]*)"')
-        var_defs = dict(var_pattern.findall(text))
+        return (dict(var_pattern.findall(text)), var_pattern)
 
-        # 変数定義部分を削除
-        text_wo_defs = var_pattern.sub("", text)
+    @staticmethod
+    def replace_variables(text, var_defs):
 
         # 変数参照の置換: $name
         def replace_var(match):
@@ -236,7 +235,21 @@ class ReplaceVariablesNode:
 
         # アンダースコア2個 "__" の直前までをマッチし、それ以降はマッチしない
         ref_pattern = re.compile(r"\$([a-zA-Z_][a-zA-Z0-9_]*?)(?=__|[^a-zA-Z0-9_]|$)")
-        replaced_text = ref_pattern.sub(replace_var, text_wo_defs)
+        replaced_text = ref_pattern.sub(replace_var, text)
+
+        # 先頭・末尾の不要な空白・改行を除去
+        return replaced_text.strip()
+
+    @staticmethod
+    def doit(text):
+        # 変数定義の抽出: $name="value"
+        (var_defs, var_pattern) = ReplaceVariablesNode.get_variables(text)
+
+        # 変数定義部分を削除
+        text_wo_defs = var_pattern.sub("", text)
+
+        # 変数参照の置換
+        replaced_text = ReplaceVariablesNode.replace_variables(text_wo_defs, var_defs)
 
         # 先頭・末尾の不要な空白・改行を除去
         return (replaced_text.strip(),)
@@ -262,6 +275,39 @@ class ProcessWildcardNode:
         result = impact.wildcards.process(wildcard_text, seed)
         return (result, )
 
+
+class ReplaceVariablesAndProcessWildcardNode:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "text": ("STRING", {"forceInput": True, "multiline": True, "default": ""}),
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "tooltip": "Determines the random seed to be used for wildcard processing."}),
+                "loop_count": ("INT", {"default": 1, "min": 1, "step": 1}),
+            },
+        }
+
+    CATEGORY = "text"
+
+    RETURN_TYPES = ("STRING", )
+    RETURN_NAMES = ("prompt", )
+    OUTPUT_IS_LIST = (False, )
+    FUNCTION = "doit"
+
+    def doit(self, text, seed, loop_count):
+        # 変数定義の抽出: $name="value"
+        (var_defs, var_pattern) = ReplaceVariablesNode.get_variables(text)
+
+        # 変数定義部分を削除
+        result = var_pattern.sub("", text)
+
+        for _ in range(loop_count):
+            result = ReplaceVariablesNode.replace_variables(result, var_defs)
+            result = impact.wildcards.process(result, seed)
+
+        # 先頭・末尾の不要な空白・改行を除去
+        return (result.strip(),)
+
 NODE_CLASS_MAPPINGS = {
     "LoadTextFile": LoadTextFileNode,
     "SaveTextFile": SaveTextFileNode,
@@ -270,6 +316,7 @@ NODE_CLASS_MAPPINGS = {
     "PromptsFromTextbox": PromptsFromTextboxNode,
     "ReplaceVariables": ReplaceVariablesNode,
     "ProcessWildcard": ProcessWildcardNode,
+    "ReplaceVariablesAndProcessWildcard": ReplaceVariablesAndProcessWildcardNode,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -280,4 +327,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "PromptsFromTextbox": "Prompts from textbox",
     "ReplaceVariables": "Replace Variables",
     "ProcessWildcard": "Process Wildcard",
+    "ReplaceVariablesAndProcessWildcard": "Replace Variables and Process Wildcard (Loop)",
 }
