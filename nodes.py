@@ -78,7 +78,7 @@ class RemoveCommentsNode:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "text": ("STRING", {"forceInput": True, "multiline": True, "default": ""}),
+                "text": ("STRING", {"multiline": True, "default": ""}),
                 "line_comment": ("STRING", {"multiline": False, "default": "//"}),
                 "block_comment_start": ("STRING", {"multiline": False, "default": "/*"}),
                 "block_comment_end": ("STRING", {"multiline": False, "default": "*/"}),
@@ -240,7 +240,6 @@ class ReplaceVariablesNode:
 
         # 先頭・末尾の不要な空白・改行を除去
         return (replaced_text.strip(),)
-
 
 class ProcessWildcardNode:
     @classmethod
