@@ -103,6 +103,9 @@ class RemoveCommentsNode:
         while block_comment_start in text:
             start = text.find(block_comment_start)
             end = text.find(block_comment_end)
+            # block_comment_endが見つからない場合は処理しない
+            if end == -1:
+                break
             text = text[:start] + text[end + len(block_comment_end):]
 
         # line_comment以降の文字を削除（単一行コメント）
@@ -231,12 +234,34 @@ class ReplaceVariablesNode:
             var_name = match.group(1)
             return var_defs.get(var_name, match.group(0))
 
-        ref_pattern = re.compile(r"\$([a-zA-Z_][a-zA-Z0-9_]*)")
+        # アンダースコア2個 "__" の直前までをマッチし、それ以降はマッチしない
+        ref_pattern = re.compile(r"\$([a-zA-Z_][a-zA-Z0-9_]*?)(?=__|[^a-zA-Z0-9_]|$)")
         replaced_text = ref_pattern.sub(replace_var, text_wo_defs)
 
         # 先頭・末尾の不要な空白・改行を除去
         return (replaced_text.strip(),)
 
+
+class ProcessWildcardNode:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "wildcard_text": ("STRING", {"multiline": True, "default": ""}),
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "tooltip": "Determines the random seed to be used for wildcard processing."}),
+            },
+        }
+
+    CATEGORY = "text"
+
+    RETURN_TYPES = ("STRING", )
+    RETURN_NAMES = ("prompt", )
+    OUTPUT_IS_LIST = (False, )
+    FUNCTION = "doit"
+
+    def doit(self, wildcard_text, seed):
+        result = impact.wildcards.process(wildcard_text, seed)
+        return (result, )
 
 NODE_CLASS_MAPPINGS = {
     "LoadTextFile": LoadTextFileNode,
@@ -245,6 +270,7 @@ NODE_CLASS_MAPPINGS = {
     "StringsFromTextbox": StringsFromTextboxNode,
     "PromptsFromTextbox": PromptsFromTextboxNode,
     "ReplaceVariables": ReplaceVariablesNode,
+    "ProcessWildcard": ProcessWildcardNode,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -254,4 +280,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "StringsFromTextbox": "Strings from textbox",
     "PromptsFromTextbox": "Prompts from textbox",
     "ReplaceVariables": "Replace Variables",
+    "ProcessWildcard": "Process Wildcard",
 }
