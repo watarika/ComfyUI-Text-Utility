@@ -4,6 +4,10 @@
 
 テキストを扱うカスタムノードです。
 
+※ワイルドカードを使用するカスタムノードは、内部的に [ComfyUI-Impact-Pack](https://github.com/ltdrdata/ComfyUI-Impact-Pack) のワイルドカード処理を呼び出します。そのため、ComfyUI-Impact-Pack をインストールしておく必要があります。
+
+ワイルドカードについては [ImpactWildcard](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/ImpactWildcard.md) を参照してください。
+
 ## Load Text File
 
 指定したファイルを読み込みます。
@@ -27,6 +31,7 @@ overwriteをFalseにするとファイルが存在した場合は何も行いま
 
 ![image](https://github.com/user-attachments/assets/a1d61f3b-f96e-4e9e-a669-f4d722bd473b)
 
+- text : 処理対象のテキスト
 - line_comment : 行コメントを開始する文字列（デフォルト：//）
 - block_comment_start : ブロックコメントを開始する文字列（デフォルト：/*）
 - block_comment_end : ブロックコメントを終了する文字列（デフォルト：*/）
@@ -59,9 +64,6 @@ Webui の Prompts from file or textbox のような使い方ができます。
 
 ![image](https://github.com/user-attachments/assets/8b34b576-c27e-4c68-9ec7-81caa52ae611)
 
-内部的に [ComfyUI-Impact-Pack](https://github.com/ltdrdata/ComfyUI-Impact-Pack) のワイルドカード処理を呼び出します。そのため、ComfyUI-Impact-Pack をインストールしておく必要があります。
-
-ワイルドカードについては [ImpactWildcard](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/ImpactWildcard.md) を参照してください。
 
 - wildcard_text: 抽出する元となるワイルドカードテキスト（複数行）
 - seed: ワイルドカード処理に使用するSeed
@@ -82,13 +84,23 @@ Webui の Prompts from file or textbox のような使い方ができます。
 - 入力例：`$animal="cat" $color="black" The $color $animal sleeps on the sofa.`
 - 出力例：`The black cat sleeps on the sofa.`
 
+
+## Process Wildcard
+
+Impact Pack のワイルドカードを展開するための単機能ノードです。入力したテキスト内のワイルドカードを、指定したシードで処理して結果を返します。
+
+- wildcard_text: 展開したいワイルドカードテキスト（複数行可）
+- seed: ワイルドカード処理に使用するシード
+
 ## 変更履歴
 
+- V1.4.0 (2025-09-28)
+  - `Process Wildcard` ノード、`Replace Variables and Process Wildcard (Loop)` ノードを追加
 - v1.3.1 (2025-04-22)
-  - Remove Comments ノードに normalize_commas オプションを追加
+  - `Remove Comments` ノードに normalize_commas オプションを追加
 - v1.3.0 (2025-04-22)
-  - Replace Variables ノードを追加
+  - `Replace Variables` ノードを追加
 - v1.2.0 (2025-04-06)
-  - Prompts from textbox ノードを追加
+  - `Prompts from textbox` ノードを追加
 - v1.1.0 (2025-04-05)
-  - Strings from textbox ノードを追加
+  - `Strings from textbox` ノードを追加

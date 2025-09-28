@@ -4,6 +4,11 @@
 
 Custom node to handle text.
 
+Note: Custom nodes using wildcards internally call the wildcard processing of [ComfyUI-Impact-Pack](https://github.com/ltdrdata/ComfyUI-Impact-Pack). Therefore, ComfyUI-Impact-Pack must be installed beforehand.
+
+For details on wildcards, refer to [ImpactWildcard](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/ImpactWildcard.md).
+
+
 ## Load Text File
 
 Loads a specified file.
@@ -59,10 +64,6 @@ If you want to use wildcards, use "Prompts from textbox".
 
 ![image](https://github.com/user-attachments/assets/8b34b576-c27e-4c68-9ec7-81caa52ae611)
 
-Internally calls the wildcard processing of [ComfyUI-Impact-Pack](https://github.com/ltdrdata/ComfyUI-Impact-Pack).Therefore, ComfyUI-Impact-Pack must be installed.
-
-For wildcards, see [ImpactWildcard](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/ImpactWildcard.md).
-
 - wildcard_text: The source wildcard text (multiple lines) to be extracted
 - seed: Seed to use for wildcard processing
 - start: The line to start with
@@ -82,13 +83,23 @@ Replaces variables in the input text using definitions.
 - Example input: `$animal="cat" $color="black" The $color $animal sleeps on the sofa.`
 - Example output: `The black cat sleeps on the sofa.`
 
+
+## Process Wildcard
+
+This is a single-function node for expanding wildcards in Impact Pack. It processes wildcards within the input text using the specified seed and returns the result.
+
+- wildcard_text: Wildcard text to expand (multiple lines allowed)
+- seed: Seed used for wildcard processing
+
 ## Changelog
 
+- V1.4.0 (September 28, 2025)
+  - Added `Process Wildcard` node and `Replace Variables and Process Wildcard (Loop)` node
 - v1.3.1 (2025-04-22)
-  - Added normalize_commas option to Remove Comments node
+  - Added normalize_commas option to `Remove Comments` node
 - v1.3.0 (2025-04-22)
-  - Add Replace Variables Node
+  - Add `Replace Variables` Node
 - v1.2.0 (2025-04-06)
-  - Add Prompts from textbox Node
+  - Add `Prompts from textbox` Node
 - v1.1.0 (2025-04-05)
-  - Add Strings from textbox Node
+  - Add `Strings from textbox` Node
