@@ -57,6 +57,8 @@ If you want to use wildcards, use "Prompts from textbox".
 - mode: Whether to update each time start is processed (default: Continued)
   - Fixed : do not update
   - Continued : updated
+- repeats_per_line: Number of repetitions per line
+- counter: Internal management counter (will be ignored even if set)
 
 ## Prompts from textbox
 
@@ -70,6 +72,8 @@ If you want to use wildcards, use "Prompts from textbox".
 - mode: Whether to update each time start is processed (default: Fixed)
   - Fixed : do not update
   - Continued : updated
+- repeats_per_line: Number of repetitions per line
+- counter: Internal management counter (will be ignored even if set)
 
 ## Replace Variables
 
