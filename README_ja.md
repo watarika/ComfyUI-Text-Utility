@@ -92,6 +92,26 @@ Impact Pack のワイルドカードを展開するための単機能ノード�
 - wildcard_text: 展開したいワイルドカードテキスト（複数行可）
 - seed: ワイルドカード処理に使用するシード
 
+## Replace Variables and Process Wildcard (Loop)
+
+変数を置換してからワイルドカードを展開します。この2つの処理をこの順番で `loop_count` 回繰り返します。変数の値にワイルドカードが含まれる場合や、段階的な展開が必要な場合に便利です。
+
+- text: 変数定義・変数参照・ワイルドカードを含められる入力テキスト
+  - 変数定義: `$name="value"`（value はダブルクォートで囲む）
+  - 変数参照: `$name`
+  - 変数定義は処理の前に本文から取り除かれます
+- seed: ワイルドカード処理に使用するシード
+- remove_linefeed: 出力の改行を削除するか
+  - No: 改行を保持
+  - All: すべての改行を削除
+  - Blank Lines Only: 空行のみ削除
+- normalize_commas: 単語区切りのカンマの空白を正規化し、余分なカンマを削除
+- remove_undefined_variables: 定義されていない `$var` 参照を削除
+- loop_count: 「変数置換 → ワイルドカード展開」を繰り返す回数
+
+- 例（入力）: `$adj="beautiful" $thing="__objects__" A $adj $thing`
+- 例（出力）: `A beautiful flower`
+
 ## 変更履歴
 
 - V1.4.0 (2025-09-28)

@@ -91,9 +91,29 @@ This is a single-function node for expanding wildcards in Impact Pack. It proces
 - wildcard_text: Wildcard text to expand (multiple lines allowed)
 - seed: Seed used for wildcard processing
 
+## Replace Variables and Process Wildcard (Loop)
+
+Replaces variables and then expands wildcards, in that order, repeating the pair of operations `loop_count` times. Useful when variable values contain wildcards or when multi-step expansion is needed.
+
+- text: Input text that may include variable definitions, variable references, and wildcard expressions
+  - Variable definition: `$name="value"` (value must be in double quotes)
+  - Variable reference: `$name`
+  - Variable definitions are removed from the text before processing
+- seed: Seed used for wildcard processing
+- remove_linefeed: Whether to remove line breaks from the result
+  - No: keep line breaks
+  - All: remove all line breaks
+  - Blank Lines Only: remove only blank lines
+- normalize_commas: Normalize comma spacing and remove extra commas
+- remove_undefined_variables: Remove any `$var` references that are not defined
+- loop_count: Number of times to repeat “replace variables → process wildcards”
+
+- Example input: `$adj="beautiful" $thing="__objects__" A $adj $thing`
+- Example output: `A beautiful flower`
+
 ## Changelog
 
-- V1.4.0 (September 28, 2025)
+- V1.4.0 (2025-09-28)
   - Added `Process Wildcard` node and `Replace Variables and Process Wildcard (Loop)` node
 - v1.3.1 (2025-04-22)
   - Added normalize_commas option to `Remove Comments` node
