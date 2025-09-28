@@ -57,6 +57,8 @@ Webui の Prompts from file or textbox のような使い方ができます。
 - mode: startを処理するたびに更新するかどうか（デフォルト：Continued）
   - Fixed : 更新しない
   - Continued : 更新する
+- repeats_per_line: 行ごとに繰り返す回数
+- counter: 内部管理用のカウンター（設定しても無視されます）
 
 ## Prompts from textbox
 
@@ -71,6 +73,8 @@ Webui の Prompts from file or textbox のような使い方ができます。
 - mode: startを処理するたびに更新するかどうか（デフォルト：Fixed）
   - Fixed : 更新しない
   - Continued : 更新する
+- repeats_per_line: 行ごとに繰り返す回数
+- counter: 内部管理用のカウンター（設定しても無視されます）
 
 ## Replace Variables
 

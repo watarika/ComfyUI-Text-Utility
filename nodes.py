@@ -4,6 +4,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../Comf
 import impact
 import impact.wildcards
 import re
+import math
 
 class LoadTextFileNode:
 
@@ -152,6 +153,7 @@ class StringsFromTextboxNode:
                 "text": ("STRING", {"multiline": True, "default": ""}),
                 "start": ("INT", {"default": 1, "min": 0, "step": 1}),
                 "mode": (["Fixed", "Continued",], {"default": "Fixed", "tooltip": "If Fixed, start is left unchanged; if Continued, start is updated to the number at which the process has progressed."}),
+                "repeats_per_line": ("INT", {"default": 1, "min": 1, "step": 1}),
                 "counter": ("INT", {"default": 0, "min": 0, "step": 1}),
             },
         }
@@ -177,8 +179,9 @@ class StringsFromTextboxNode:
 
         return ""
 
-    def doit(self, text, start, mode, counter):
-        result = StringsFromTextboxNode.extract_line(text, start, mode, counter)
+    def doit(self, text, start, mode, repeats_per_line, counter):
+        line_count = math.ceil(counter / repeats_per_line)
+        result = StringsFromTextboxNode.extract_line(text, start, mode, line_count)
         return (result, str(counter), )
 
 
@@ -191,6 +194,7 @@ class PromptsFromTextboxNode:
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "tooltip": "Determines the random seed to be used for wildcard processing."}),
                 "start": ("INT", {"default": 1, "min": 0, "step": 1}),
                 "mode": (["Fixed", "Continued",], {"default": "Fixed", "tooltip": "If Fixed, start is left unchanged; if Continued, start is updated to the number at which the process has progressed."}),
+                "repeats_per_line": ("INT", {"default": 1, "min": 1, "step": 1}),
                 "counter": ("INT", {"default": 0, "min": 0, "step": 1}),
             },
         }
@@ -202,8 +206,9 @@ class PromptsFromTextboxNode:
     OUTPUT_IS_LIST = (False, False, )
     FUNCTION = "doit"
 
-    def doit(self, wildcard_text, seed, start, mode, counter):
-        target_string = StringsFromTextboxNode.extract_line(wildcard_text, start, mode, counter)
+    def doit(self, wildcard_text, seed, start, mode, repeats_per_line, counter):
+        line_count = math.ceil(counter / repeats_per_line)
+        target_string = StringsFromTextboxNode.extract_line(wildcard_text, start, mode, line_count)
         result = impact.wildcards.process(target_string, seed)
         return (result, str(counter), )
 
