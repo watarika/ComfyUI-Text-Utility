@@ -126,17 +126,20 @@ class RemoveCommentsNode:
 
         # カンマ区切り正規化
         if normalize_commas:
-            text = self._normalize_commas(text)
+            text = self.normalize_commas(text)
         return(text, )
 
     @staticmethod
-    def _normalize_commas(text):
+    def normalize_commas(text):
         # 1. 連続カンマ（カンマ＋空白含む）が2回以上続く部分を「, 」に置換
         text = re.sub(r'(,\s*){2,}', ', ', text)
         # 2. カンマ前スペース除去・カンマ後スペース1つ
         text = re.sub(r'\s*,\s*', ', ', text)
-        # 3. 末尾カンマ・末尾スペース除去
+        # 3. " BREAK,"をまるごと削除（無駄なBREAK）
+        text = re.sub(r' BREAK,', '', text)        
+        # 4. 末尾カンマ・末尾スペース除去
         text = re.sub(r'(, )+$', '', text)
+
         text = text.strip()
         return text
 
@@ -238,7 +241,7 @@ class ReplaceVariablesNode:
         replaced_text = ref_pattern.sub(replace_var, text)
 
         # 先頭・末尾の不要な空白・改行を除去
-        return replaced_text.strip()
+        return replaced_text
 
     @staticmethod
     def doit(text):
@@ -283,6 +286,13 @@ class ReplaceVariablesAndProcessWildcardNode:
             "required": {
                 "text": ("STRING", {"forceInput": True, "multiline": True, "default": ""}),
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "tooltip": "Determines the random seed to be used for wildcard processing."}),
+                "remove_linefeed": ([
+                    "No",
+                    "All",
+                    "Blank Lines Only",
+                ],),
+                "normalize_commas": ("BOOLEAN", {"default": False}),
+                "remove_undefined_variables": ("BOOLEAN", {"default": False}),
                 "loop_count": ("INT", {"default": 1, "min": 1, "step": 1}),
             },
         }
@@ -294,19 +304,40 @@ class ReplaceVariablesAndProcessWildcardNode:
     OUTPUT_IS_LIST = (False, )
     FUNCTION = "doit"
 
-    def doit(self, text, seed, loop_count):
+    def doit(self, text, seed, remove_linefeed, normalize_commas, remove_undefined_variables, loop_count):
         # 変数定義の抽出: $name="value"
         (var_defs, var_pattern) = ReplaceVariablesNode.get_variables(text)
 
         # 変数定義部分を削除
-        result = var_pattern.sub("", text)
+        work_text = var_pattern.sub("", text)
 
         for _ in range(loop_count):
-            result = ReplaceVariablesNode.replace_variables(result, var_defs)
-            result = impact.wildcards.process(result, seed)
+            work_text = ReplaceVariablesNode.replace_variables(work_text, var_defs)
+            work_text = impact.wildcards.process(work_text, seed)
+
+        # 未定義変数の削除
+        if remove_undefined_variables:
+            var_pattern = re.compile(r"\$([a-zA-Z_][a-zA-Z0-9_]*?)(?=__|[^a-zA-Z0-9_]|$)")
+            work_text = var_pattern.sub("", work_text)
+            # 削除した変数をprintする
+            undefined_vars = set(var_pattern.findall(work_text)) - set(var_defs.keys())
+            if undefined_vars:
+                print(f"Removed undefined variables: {', '.join(undefined_vars)}")
+
+        # 空行を削除
+        if remove_linefeed == "Blank Lines Only":
+            work_text = "\n".join([line for line in work_text.split("\n") if line.strip()])
+
+        # 改行を削除
+        elif remove_linefeed == "All":
+            work_text = work_text.replace("\n", "")
+
+        # カンマ区切り正規化
+        if normalize_commas:
+            work_text = RemoveCommentsNode.normalize_commas(work_text)
 
         # 先頭・末尾の不要な空白・改行を除去
-        return (result.strip(),)
+        return (work_text.strip(),)
 
 NODE_CLASS_MAPPINGS = {
     "LoadTextFile": LoadTextFileNode,
