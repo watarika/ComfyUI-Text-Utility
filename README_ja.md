@@ -29,7 +29,7 @@ overwriteをFalseにするとファイルが存在した場合は何も行いま
 
 コメントを削除します。行コメントとブロックコメントに対応しています。
 
-![image](https://github.com/user-attachments/assets/a1d61f3b-f96e-4e9e-a669-f4d722bd473b)
+![image](https://github.com/user-attachments/assets/01198159-ecbf-4641-9b05-b36190c531ba)
 
 - text : 処理対象のテキスト
 - line_comment : 行コメントを開始する文字列（デフォルト：//）
@@ -89,12 +89,16 @@ Webui の Prompts from file or textbox のような使い方ができます。
 
 Impact Pack のワイルドカードを展開するための単機能ノードです。入力したテキスト内のワイルドカードを、指定したシードで処理して結果を返します。
 
+![image](https://github.com/user-attachments/assets/8443325d-b228-4a39-a8c6-55c23c6910ed)
+
 - wildcard_text: 展開したいワイルドカードテキスト（複数行可）
 - seed: ワイルドカード処理に使用するシード
 
 ## Replace Variables and Process Wildcard (Loop)
 
 変数を置換してからワイルドカードを展開します。この2つの処理をこの順番で `loop_count` 回繰り返します。変数の値にワイルドカードが含まれる場合や、段階的な展開が必要な場合に便利です。
+
+![image](https://github.com/user-attachments/assets/77c83b87-d2b6-4c4b-91cb-199fce2cec52)
 
 - text: 変数定義・変数参照・ワイルドカードを含められる入力テキスト
   - 変数定義: `$name="value"`（value はダブルクォートで囲む）
