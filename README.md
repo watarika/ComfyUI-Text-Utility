@@ -30,7 +30,7 @@ If overwrite is False, no action is taken if the file exists.
 
 Delete comment.Line comments and block comments are supported.
 
-![image](https://github.com/user-attachments/assets/a1d61f3b-f96e-4e9e-a669-f4d722bd473b)
+![image](https://github.com/user-attachments/assets/01198159-ecbf-4641-9b05-b36190c531ba)
 
 - line_comment : The string used to start a single line comment (default: //)
 - block_comment_start : The string used to start a block comment (default: /*)
@@ -88,12 +88,16 @@ Replaces variables in the input text using definitions.
 
 This is a single-function node for expanding wildcards in Impact Pack. It processes wildcards within the input text using the specified seed and returns the result.
 
+![image](https://github.com/user-attachments/assets/8443325d-b228-4a39-a8c6-55c23c6910ed)
+
 - wildcard_text: Wildcard text to expand (multiple lines allowed)
 - seed: Seed used for wildcard processing
 
 ## Replace Variables and Process Wildcard (Loop)
 
 Replaces variables and then expands wildcards, in that order, repeating the pair of operations `loop_count` times. Useful when variable values contain wildcards or when multi-step expansion is needed.
+
+![image](https://github.com/user-attachments/assets/77c83b87-d2b6-4c4b-91cb-199fce2cec52)
 
 - text: Input text that may include variable definitions, variable references, and wildcard expressions
   - Variable definition: `$name="value"` (value must be in double quotes)
