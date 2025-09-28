@@ -45,7 +45,7 @@ overwriteをFalseにするとファイルが存在した場合は何も行いま
 
 テキストボックスに入力した複数行のテキストから1行を取り出します。
 
-![image](https://github.com/user-attachments/assets/a576e017-73aa-4eae-a9c7-af888b90b35c)
+![image](https://github.com/user-attachments/assets/e766c32d-afa0-4c2a-9a03-bd8c3fe0dbb1)
 
 バッチカウントを使ってバッチ実行した場合、実行するたびにstart行からインクリメントしながら1行ずつ取り出します。  
 Webui の Prompts from file or textbox のような使い方ができます。
@@ -64,8 +64,7 @@ Webui の Prompts from file or textbox のような使い方ができます。
 
 ワイルドカードに対応した "Strings from textbox" です。
 
-![image](https://github.com/user-attachments/assets/8b34b576-c27e-4c68-9ec7-81caa52ae611)
-
+![image](https://github.com/user-attachments/assets/44d6937a-3d9f-4153-b3ea-dc5435cada69)
 
 - wildcard_text: 抽出する元となるワイルドカードテキスト（複数行）
 - seed: ワイルドカード処理に使用するSeed
