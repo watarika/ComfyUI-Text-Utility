@@ -121,10 +121,14 @@ Replaces variables and then expands wildcards, in that order, repeating the pair
 
 ## Changelog
 
+- V1.4.2 (2025-09-29)
+  - Added `line_counter` and `total_counter` to the output of the `Strings from textbox` node and `Prompts from textbox` node
+- V1.4.1 (2025-09-29)
+  - Added `repeats_per_line` setting to `Strings from textbox` node and `Prompts from textbox` node
 - V1.4.0 (2025-09-28)
   - Added `Process Wildcard` node and `Replace Variables and Process Wildcard (Loop)` node
 - v1.3.1 (2025-04-22)
-  - Added normalize_commas option to `Remove Comments` node
+  - Added `normalize_commas` option to `Remove Comments` node
 - v1.3.0 (2025-04-22)
   - Add `Replace Variables` Node
 - v1.2.0 (2025-04-06)

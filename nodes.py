@@ -158,9 +158,9 @@ class StringsFromTextboxNode:
             },
         }
         
-    RETURN_TYPES = ("STRING", "STRING", )
-    RETURN_NAMES = ("prompt", "counter", )
-    OUTPUT_IS_LIST = (False, False, )
+    RETURN_TYPES = ("STRING", "STRING", "STRING", )
+    RETURN_NAMES = ("prompt", "line_counter", "total_counter", )
+    OUTPUT_IS_LIST = (False, False, False, )
     FUNCTION = 'doit'
     CATEGORY = "text"
 
@@ -182,7 +182,7 @@ class StringsFromTextboxNode:
     def doit(self, text, start, mode, repeats_per_line, counter):
         line_count = math.ceil(counter / repeats_per_line)
         result = StringsFromTextboxNode.extract_line(text, start, mode, line_count)
-        return (result, str(counter), )
+        return (result, str(line_count), str(counter), )
 
 
 class PromptsFromTextboxNode:
@@ -201,16 +201,16 @@ class PromptsFromTextboxNode:
 
     CATEGORY = "text"
 
-    RETURN_TYPES = ("STRING", "STRING", )
-    RETURN_NAMES = ("prompt", "counter", )
-    OUTPUT_IS_LIST = (False, False, )
+    RETURN_TYPES = ("STRING", "STRING", "STRING", )
+    RETURN_NAMES = ("prompt", "line_counter", "total_counter", )
+    OUTPUT_IS_LIST = (False, False, False, )
     FUNCTION = "doit"
 
     def doit(self, wildcard_text, seed, start, mode, repeats_per_line, counter):
         line_count = math.ceil(counter / repeats_per_line)
         target_string = StringsFromTextboxNode.extract_line(wildcard_text, start, mode, line_count)
         result = impact.wildcards.process(target_string, seed)
-        return (result, str(counter), )
+        return (result, str(line_count), str(counter), )
 
 
 class ReplaceVariablesNode:

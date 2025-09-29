@@ -121,10 +121,14 @@ Impact Pack のワイルドカードを展開するための単機能ノード�
 
 ## 変更履歴
 
+- V1.4.2 (2025-09-29)
+  - `Strings from textbox` ノード、`Prompts from textbox` ノードの出力に `line_counter`, `total_counter` を追加
+- V1.4.1 (2025-09-29)
+  - `Strings from textbox` ノード、`Prompts from textbox` ノードに `repeats_per_line` 設定を追加
 - V1.4.0 (2025-09-28)
   - `Process Wildcard` ノード、`Replace Variables and Process Wildcard (Loop)` ノードを追加
 - v1.3.1 (2025-04-22)
-  - `Remove Comments` ノードに normalize_commas オプションを追加
+  - `Remove Comments` ノードに `normalize_commas` 設定を追加
 - v1.3.0 (2025-04-22)
   - `Replace Variables` ノードを追加
 - v1.2.0 (2025-04-06)
