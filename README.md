@@ -45,7 +45,7 @@ Delete comment.Line comments and block comments are supported.
 
 Extracts a single line from multiple lines of text entered in a textbox.
 
-![image](https://github.com/user-attachments/assets/e766c32d-afa0-4c2a-9a03-bd8c3fe0dbb1)
+![image](https://github.com/user-attachments/assets/83bcb582-e173-4d12-bafd-5a91271aeeaa)
 
 When executed in batch using batch count, it takes out one line at a time, incrementing from the start line each time it is executed.
 You can use it like Webui's Prompts from file or textbox.
@@ -64,7 +64,7 @@ If you want to use wildcards, use "Prompts from textbox".
 
 "Strings from textbox" with wildcard support.
 
-![image](https://github.com/user-attachments/assets/44d6937a-3d9f-4153-b3ea-dc5435cada69)
+![image](https://github.com/user-attachments/assets/06e8de03-4964-49c2-8a5c-9c266d3263d6)
 
 - wildcard_text: The source wildcard text (multiple lines) to be extracted
 - seed: Seed to use for wildcard processing
