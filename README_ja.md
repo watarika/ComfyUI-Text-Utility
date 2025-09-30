@@ -114,19 +114,30 @@ Impact Pack のワイルドカードを展開するための単機能ノード�
   - Blank Lines Only: 空行のみ削除
 - normalize_commas: 単語区切りのカンマの空白を正規化し、余分なカンマを削除
 - remove_undefined_variables: 定義されていない `$var` 参照を削除
+- process_conditional_tags: <a href="doc/ConditionalTagProcessor_ja.md">Conditional Tag Processor</a> と同じ処理を最後に1回のみ実行
 - loop_count: 「変数置換 → ワイルドカード展開」を繰り返す回数
 
 - 例（入力）: `$adj="beautiful" $thing="__objects__" A $adj $thing`
 - 例（出力）: `A beautiful flower`
 
+## Conditional Tag Processor
+
+条件に一致した場合にタグを追加、削除します。\
+詳細は <a href="doc/ConditionalTagProcessor_ja.md">Conditional Tag Processor</a> を参照してください。
+
+
 ## 変更履歴
 
+- V1.5.0 (2025-09-30)
+  - `Conditional Tag Processor` ノードを追加
+  - `Replace Variables and Process Wildcard (Loop)` ノードに `process_conditional_tags` オプションを追加
 - V1.4.2 (2025-09-29)
   - `Strings from textbox` ノード、`Prompts from textbox` ノードの出力に `line_counter`, `total_counter` を追加
 - V1.4.1 (2025-09-29)
   - `Strings from textbox` ノード、`Prompts from textbox` ノードに `repeats_per_line` 設定を追加
 - V1.4.0 (2025-09-28)
-  - `Process Wildcard` ノード、`Replace Variables and Process Wildcard (Loop)` ノードを追加
+  - `Process Wildcard` ノードを追加
+  - `Replace Variables and Process Wildcard (Loop)` ノードを追加
 - v1.3.1 (2025-04-22)
   - `Remove Comments` ノードに `normalize_commas` 設定を追加
 - v1.3.0 (2025-04-22)

@@ -114,19 +114,28 @@ Replaces variables and then expands wildcards, in that order, repeating the pair
   - Blank Lines Only: remove only blank lines
 - normalize_commas: Normalize comma spacing and remove extra commas
 - remove_undefined_variables: Remove any `$var` references that are not defined
+- process_conditional_tags: Execute the same processing as the <a href="doc/ConditionalTagProcessor.md">Conditional Tag Processor</a> exactly once at the end.
 - loop_count: Number of times to repeat “replace variables → process wildcards”
 
 - Example input: `$adj="beautiful" $thing="__objects__" A $adj $thing`
 - Example output: `A beautiful flower`
 
+## Conditional Tag Processor
+Adds or removes tags when conditions match.\
+For details, see <a href="doc/ConditionalTagProcessor.md">Conditional Tag Processor</a>.
+
 ## Changelog
 
+- V1.5.0 (2025-09-30)
+  - Added `Conditional Tag Processor` node
+  - Added `process_conditional_tags` option to `Replace Variables and Process Wildcard (Loop)` node
 - V1.4.2 (2025-09-29)
   - Added `line_counter` and `total_counter` to the output of the `Strings from textbox` node and `Prompts from textbox` node
 - V1.4.1 (2025-09-29)
   - Added `repeats_per_line` setting to `Strings from textbox` node and `Prompts from textbox` node
 - V1.4.0 (2025-09-28)
-  - Added `Process Wildcard` node and `Replace Variables and Process Wildcard (Loop)` node
+  - Added `Process Wildcard` node 
+  - Added `Replace Variables and Process Wildcard (Loop)` node
 - v1.3.1 (2025-04-22)
   - Added `normalize_commas` option to `Remove Comments` node
 - v1.3.0 (2025-04-22)

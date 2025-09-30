@@ -5,6 +5,7 @@ import impact
 import impact.wildcards
 import re
 import math
+from .cond_tag_processor import ConditionalTagProcessorNode
 
 class LoadTextFileNode:
 
@@ -245,7 +246,6 @@ class ReplaceVariablesNode:
         ref_pattern = re.compile(r"\$([a-zA-Z_][a-zA-Z0-9_]*?)(?=__|[^a-zA-Z0-9_]|$)")
         replaced_text = ref_pattern.sub(replace_var, text)
 
-        # 先頭・末尾の不要な空白・改行を除去
         return replaced_text
 
     @staticmethod
@@ -298,6 +298,7 @@ class ReplaceVariablesAndProcessWildcardNode:
                 ],),
                 "normalize_commas": ("BOOLEAN", {"default": False}),
                 "remove_undefined_variables": ("BOOLEAN", {"default": False}),
+                "process_conditional_tags": ("BOOLEAN", {"default": False}),
                 "loop_count": ("INT", {"default": 1, "min": 1, "step": 1}),
             },
         }
@@ -309,7 +310,7 @@ class ReplaceVariablesAndProcessWildcardNode:
     OUTPUT_IS_LIST = (False, )
     FUNCTION = "doit"
 
-    def doit(self, text, seed, remove_linefeed, normalize_commas, remove_undefined_variables, loop_count):
+    def doit(self, text, seed, remove_linefeed, normalize_commas, remove_undefined_variables, process_conditional_tags, loop_count):
         # 変数定義の抽出: $name="value"
         (var_defs, var_pattern) = ReplaceVariablesNode.get_variables(text)
 
@@ -329,6 +330,11 @@ class ReplaceVariablesAndProcessWildcardNode:
             if undefined_vars:
                 print(f"Removed undefined variables: {', '.join(undefined_vars)}")
 
+        # 条件付きタグ処理
+        if process_conditional_tags:
+            processor = ConditionalTagProcessorNode()
+            work_text = processor.process(work_text)[0]
+
         # 空行を削除
         if remove_linefeed == "Blank Lines Only":
             work_text = "\n".join([line for line in work_text.split("\n") if line.strip()])
@@ -340,6 +346,7 @@ class ReplaceVariablesAndProcessWildcardNode:
         # カンマ区切り正規化
         if normalize_commas:
             work_text = RemoveCommentsNode.normalize_commas(work_text)
+
 
         # 先頭・末尾の不要な空白・改行を除去
         return (work_text.strip(),)
@@ -353,6 +360,7 @@ NODE_CLASS_MAPPINGS = {
     "ReplaceVariables": ReplaceVariablesNode,
     "ProcessWildcard": ProcessWildcardNode,
     "ReplaceVariablesAndProcessWildcard": ReplaceVariablesAndProcessWildcardNode,
+    "ConditionalTagProcessorNode": ConditionalTagProcessorNode,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -364,4 +372,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ReplaceVariables": "Replace Variables",
     "ProcessWildcard": "Process Wildcard",
     "ReplaceVariablesAndProcessWildcard": "Replace Variables and Process Wildcard (Loop)",
+    "ConditionalTagProcessorNode": "Conditional Tag Processor",
 }
