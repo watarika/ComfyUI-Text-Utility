@@ -128,6 +128,8 @@ Impact Pack のワイルドカードを展開するための単機能ノード�
 
 ## 変更履歴
 
+- V1.5.1 (2025-10-01)
+  - `Strings from textbox` ノード、`Prompts from textbox` ノードの `line_counter` 出力のバグを修正
 - V1.5.0 (2025-09-30)
   - `Conditional Tag Processor` ノードを追加
   - `Replace Variables and Process Wildcard (Loop)` ノードに `process_conditional_tags` オプションを追加

@@ -126,6 +126,8 @@ For details, see <a href="doc/ConditionalTagProcessor.md">Conditional Tag Proces
 
 ## Changelog
 
+- V1.5.1 (2025-10-01)
+  - Fixed a bug in the `line_counter` output of the `Strings from textbox` node and the `Prompts from textbox` node
 - V1.5.0 (2025-09-30)
   - Added `Conditional Tag Processor` node
   - Added `process_conditional_tags` option to `Replace Variables and Process Wildcard (Loop)` node

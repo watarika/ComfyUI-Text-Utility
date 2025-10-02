@@ -183,7 +183,7 @@ class StringsFromTextboxNode:
     def doit(self, text, start, mode, repeats_per_line, counter):
         line_count = math.ceil(counter / repeats_per_line)
         result = StringsFromTextboxNode.extract_line(text, start, mode, line_count)
-        return (result, str(line_count), str(counter), )
+        return (result, str(start + line_count - 1), str(counter), )
 
 
 class PromptsFromTextboxNode:
@@ -211,7 +211,7 @@ class PromptsFromTextboxNode:
         line_count = math.ceil(counter / repeats_per_line)
         target_string = StringsFromTextboxNode.extract_line(wildcard_text, start, mode, line_count)
         result = impact.wildcards.process(target_string, seed)
-        return (result, str(line_count), str(counter), )
+        return (result, str(start + line_count - 1), str(counter), )
 
 
 class ReplaceVariablesNode:
