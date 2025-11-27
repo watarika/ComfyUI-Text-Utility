@@ -60,6 +60,15 @@ If you want to use wildcards, use "Prompts from textbox".
 - repeats_per_line: Number of repetitions per line
 - counter: Internal management counter (will be ignored even if set)
 
+## Strings to List
+
+Splits the input text into lines and returns them as a list.
+
+![image](doc/image/Strings_to_List.png)
+
+- text: Source text (multiple lines)
+- repeats_per_line: Number of repetitions per line
+
 ## Prompts from textbox
 
 "Strings from textbox" with wildcard support.
@@ -126,6 +135,8 @@ For details, see <a href="doc/ConditionalTagProcessor.md">Conditional Tag Proces
 
 ## Changelog
 
+- V1.5.2 (2025-11-28)
+  - Added `Strings to List` node
 - V1.5.1 (2025-10-01)
   - Fixed a bug in the `line_counter` output of the `Strings from textbox` node and the `Prompts from textbox` node
 - V1.5.0 (2025-09-30)

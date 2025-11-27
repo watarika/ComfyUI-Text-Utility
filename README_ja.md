@@ -60,6 +60,15 @@ Webui の Prompts from file or textbox のような使い方ができます。
 - repeats_per_line: 行ごとに繰り返す回数
 - counter: 内部管理用のカウンター（設定しても無視されます）
 
+## Strings to List
+
+入力テキストを行ごとに分割し、リストとして返します。
+
+![image](doc/image/Strings_to_List.png)
+
+- text: 元となるテキスト（複数行）
+- repeats_per_line: 行ごとに繰り返す回数
+
 ## Prompts from textbox
 
 ワイルドカードに対応した "Strings from textbox" です。
@@ -128,6 +137,8 @@ Impact Pack のワイルドカードを展開するための単機能ノード�
 
 ## 変更履歴
 
+- V1.5.2 (2025-11-28)
+  - `Strings to List` ノードを追加
 - V1.5.1 (2025-10-01)
   - `Strings from textbox` ノード、`Prompts from textbox` ノードの `line_counter` 出力のバグを修正
 - V1.5.0 (2025-09-30)

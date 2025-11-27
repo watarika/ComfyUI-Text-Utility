@@ -185,6 +185,31 @@ class StringsFromTextboxNode:
         result = StringsFromTextboxNode.extract_line(text, start, mode, line_count)
         return (result, str(start + line_count - 1), str(counter), )
 
+class StringsToListNode:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "text": ("STRING", {"multiline": True, "default": ""}),
+                "repeats_per_line": ("INT", {"default": 1, "min": 1, "step": 1}),
+            },
+        }
+    RETURN_TYPES = ("STRING", )
+    RETURN_NAMES = ("prompts", )
+    OUTPUT_IS_LIST = (True, )
+    FUNCTION = 'doit'
+    CATEGORY = "text"
+
+    def doit(self, text, repeats_per_line):
+        lines = text.split('\n')
+        results = []
+        i = 0
+        for i, _ in enumerate(lines):
+            result = lines[i]
+            # repeats_per_line分繰り返し
+            for _ in range(repeats_per_line):
+                results.append(result)
+        return (results, )
 
 class PromptsFromTextboxNode:
     @classmethod
@@ -356,6 +381,7 @@ NODE_CLASS_MAPPINGS = {
     "SaveTextFile": SaveTextFileNode,
     "RemoveComments": RemoveCommentsNode,
     "StringsFromTextbox": StringsFromTextboxNode,
+    "StringsToList": StringsToListNode,
     "PromptsFromTextbox": PromptsFromTextboxNode,
     "ReplaceVariables": ReplaceVariablesNode,
     "ProcessWildcard": ProcessWildcardNode,
@@ -368,6 +394,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "SaveTextFile": "Save Text File",
     "RemoveComments": "Remove Comments",
     "StringsFromTextbox": "Strings from textbox",
+    "StringsToList": "Strings to List",
     "PromptsFromTextbox": "Prompts from textbox",
     "ReplaceVariables": "Replace Variables",
     "ProcessWildcard": "Process Wildcard",
