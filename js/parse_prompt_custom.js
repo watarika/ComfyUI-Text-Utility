@@ -40,16 +40,25 @@ app.registerExtension({
 				const tagNames = Object.keys(availableTags);
 
 				// ウィジェット追加
-				const comboWidget = this.addWidget("combo", "Tag to Add", tagNames[0], (v) => { }, { values: tagNames });
+				const comboWidget = this.addWidget("combo", "Tag to Add/Remove", tagNames[0], (v) => { }, { values: tagNames });
 
+				// Add Output Button
 				this.addWidget("button", "Add Output", null, () => {
 					const selectedTag = comboWidget.value;
 					if (!selectedTag) return;
 
 					const type = availableTags[selectedTag];
+					const outputName = `${selectedTag} (${type})`;
+
+					// 重複チェック
+					const existingIndex = this.findOutputSlot(outputName);
+					if (existingIndex !== -1) {
+						alert(`Output '${outputName}' already exists.`);
+						return;
+					}
 
 					// 出力を追加
-					this.addOutput(selectedTag, type);
+					this.addOutput(outputName, type);
 
 					updateTagsWidget(this);
 
@@ -59,13 +68,27 @@ app.registerExtension({
 					app.graph.setDirtyCanvas(true, true);
 				});
 
-				this.addWidget("button", "Remove Last Output", null, () => {
-					if (this.outputs && this.outputs.length > 0) {
-						this.removeOutput(this.outputs.length - 1);
-						updateTagsWidget(this);
-						this.setSize(this.computeSize());
-						app.graph.setDirtyCanvas(true, true);
+				// Remove Output Button
+				this.addWidget("button", "Remove Output", null, () => {
+					const selectedTag = comboWidget.value;
+					if (!selectedTag) return;
+
+					const type = availableTags[selectedTag];
+					const outputName = `${selectedTag} (${type})`;
+
+					// 存在チェック
+					const outputIndex = this.findOutputSlot(outputName);
+					if (outputIndex === -1) {
+						alert(`Output '${outputName}' does not exist.`);
+						return;
 					}
+
+					// 出力を削除
+					this.removeOutput(outputIndex);
+
+					updateTagsWidget(this);
+					this.setSize(this.computeSize());
+					app.graph.setDirtyCanvas(true, true);
 				});
 
 				// tags widget の更新
@@ -76,7 +99,11 @@ app.registerExtension({
 					if (!node.outputs || node.outputs.length === 0) {
 						tagsWidget.value = "";
 					} else {
-						const tags = node.outputs.map(o => o.name).join(",");
+						// 出力名から型情報 " (TYPE)" を取り除いてタグ名だけにする
+						const tags = node.outputs.map(o => {
+							const match = o.name.match(/^(.*)\s\(.*\)$/);
+							return match ? match[1] : o.name;
+						}).join(",");
 						tagsWidget.value = tags;
 					}
 				}
@@ -97,37 +124,24 @@ app.registerExtension({
 						tagsWidget.hidden = true;
 					}
 
-					// 新規作成時（outputsが空の場合）はデフォルトで prompt を追加
-					// ただし、ComfyUIはデフォルトで RETURN_TYPES に基づいて出力を作るかもしれない。
-					// Python側で RETURN_TYPES = ("*",) * 50 としているので、
-					// デフォルトで 50個の出力が作られる可能性がある！？
-					// いや、output_node: false なので、デフォルトでは作られない？
-					// 通常、ComfyUIは RETURN_TYPES の数だけ出力を作る。
-
-					// なので、onNodeCreated で余分な出力を削除する必要があるかもしれない。
-					// あるいは、ロード時は保存された出力が使われるのでOK。
-					// 新規作成時だけ、50個の出力を削除して prompt だけにする。
-
-					// tagsWidget が空なら新規作成とみなす
+					// 新規作成時（tagsWidgetが空）はデフォルトで prompt を追加
 					if (!tagsWidget.value) {
-						// 全削除
 						if (this.outputs) {
-							// 後ろから削除
+							// 全削除
 							for (let i = this.outputs.length - 1; i >= 0; i--) {
 								this.removeOutput(i);
 							}
 						}
 						// prompt 追加
-						this.addOutput("prompt", "STRING");
+						const defaultTag = "prompt";
+						const defaultType = availableTags[defaultTag];
+						this.addOutput(`${defaultTag} (${defaultType})`, defaultType);
 						updateTagsWidget(this);
 					}
 
 					this.setSize(this.computeSize());
 				}, 50);
 
-				// onConfigure はロード時に呼ばれる。
-				// ロード時は outputs は保存された状態（ユーザーが追加したもの）になっているはず。
-				// なので特に何もしなくていいが、tagsWidget との整合性チェックくらい？
 				const onConfigure = this.onConfigure;
 				this.onConfigure = function () {
 					if (onConfigure) onConfigure.apply(this, arguments);

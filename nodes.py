@@ -525,33 +525,6 @@ class ParsePromptFullNode:
             p["restore_faces"], p["tiling"], p["do_not_save_samples"], p["do_not_save_grid"]
         )
 
-class ParsePromptSimpleNode:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "text": ("STRING", {"forceInput": True, "multiline": True, "default": ""}),
-            },
-        }
-
-    RETURN_TYPES = (
-        "STRING", "STRING", "INT", "INT", "INT", "INT", "FLOAT", "INT", 
-        "STRING", "STRING", "STRING"
-    )
-    RETURN_NAMES = (
-        "prompt", "negative_prompt", "seed", "steps", "width", "height", "cfg_scale", "batch_size",
-        "outpath_samples", "outpath_grids", "prompt_for_display"
-    )
-    OUTPUT_IS_LIST = (False,) * 11
-    FUNCTION = "parse"
-    CATEGORY = "text"
-
-    def parse(self, text):
-        p = PromptParser.parse(text)
-        return (
-            p["prompt"], p["negative_prompt"], p["seed"], p["steps"], p["width"], p["height"], p["cfg_scale"], p["batch_size"],
-            p["outpath_samples"], p["outpath_grids"], p["prompt_for_display"]
-        )
 
 class AnyType(str):
     def __ne__(self, __value: object) -> bool:
@@ -571,7 +544,8 @@ class ParsePromptCustomNode:
 
     # 大量の出力を許容するためにワイルドカードを多数定義
     # ComfyUIのバリデーションを回避するために AnyType を使用
-    RETURN_TYPES = (AnyType("*"),) * 50
+    # 要素数は ParsePromptFullNode の出力数に合わせる
+    RETURN_TYPES = (AnyType("*"),) * len(ParsePromptFullNode.RETURN_NAMES)
     FUNCTION = "parse"
     CATEGORY = "text"
 
@@ -606,7 +580,6 @@ NODE_CLASS_MAPPINGS = {
     "ReplaceVariablesAndProcessWildcard": ReplaceVariablesAndProcessWildcardNode,
     "ConditionalTagProcessorNode": ConditionalTagProcessorNode,
     "ParsePromptFull": ParsePromptFullNode,
-    "ParsePromptSimple": ParsePromptSimpleNode,
     "ParsePromptCustom": ParsePromptCustomNode,
 }
 
@@ -622,6 +595,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ReplaceVariablesAndProcessWildcard": "Replace Variables and Process Wildcard (Loop)",
     "ConditionalTagProcessorNode": "Conditional Tag Processor",
     "ParsePromptFull": "Parse Prompt (Full)",
-    "ParsePromptSimple": "Parse Prompt (Simple)",
     "ParsePromptCustom": "Parse Prompt (Custom)",
 }
