@@ -2,6 +2,7 @@ import sys
 import os
 import re
 import math
+import shlex
 from .cond_tag_processor import ConditionalTagProcessorNode
 
 def get_impact_wildcards():
@@ -386,6 +387,172 @@ class ReplaceVariablesAndProcessWildcardNode:
         # 先頭・末尾の不要な空白・改行を除去
         return (work_text.strip(),)
 
+class PromptParser:
+    @staticmethod
+    def parse(text):
+        # デフォルト値の定義
+        defaults = {
+            "prompt": "",
+            "negative_prompt": "",
+            "seed": -1,
+            "steps": 20,
+            "width": 512,
+            "height": 512,
+            "cfg_scale": 7.0,
+            "batch_size": 1,
+            "outpath_samples": "",
+            "outpath_grids": "",
+            "prompt_for_display": "",
+            "styles": "",
+            "sampler_name": "",
+            "subseed": -1,
+            "seed_resize_from_h": 0,
+            "seed_resize_from_w": 0,
+            "sampler_index": 0,
+            "n_iter": 1,
+            "subseed_strength": 0.0,
+            "restore_faces": False,
+            "tiling": False,
+            "do_not_save_samples": False,
+            "do_not_save_grid": False,
+        }
+
+        # 行に "--" が含まれていない場合は、全体を prompt として扱う
+        if "--" not in text:
+            defaults["prompt"] = text
+            return defaults
+
+        try:
+            # shlex で分割
+            args = shlex.split(text)
+        except ValueError:
+            # パースエラー（引用符の閉じ忘れなど）の場合は、全体を prompt として扱う
+            defaults["prompt"] = text
+            return defaults
+
+        parsed = defaults.copy()
+        
+        i = 0
+        while i < len(args):
+            token = args[i]
+            
+            if token.startswith("--"):
+                tag = token[2:] # "--" を除去
+                i += 1
+                
+                if i >= len(args):
+                    break
+                
+                # prompt, negative_prompt は次の -- が来るまで結合
+                if tag in ["prompt", "negative_prompt"]:
+                    values = []
+                    while i < len(args) and not args[i].startswith("--"):
+                        values.append(args[i])
+                        i += 1
+                    
+                    # 既存の値がある場合は連結
+                    current_val = parsed.get(tag, "")
+                    new_val = " ".join(values)
+                    if current_val:
+                         parsed[tag] = current_val + ", " + new_val
+                    else:
+                        parsed[tag] = new_val
+                    
+                    # ループのインクリメントは while 内で行われているのでここでは不要
+                    continue
+
+                # その他のタグは1トークンだけ取得
+                else:
+                    val_str = args[i]
+                    i += 1
+                    
+                    # 型変換
+                    if tag in ["seed", "subseed", "seed_resize_from_h", "seed_resize_from_w", 
+                               "sampler_index", "batch_size", "n_iter", "steps", "width", "height"]:
+                        try:
+                            parsed[tag] = int(val_str)
+                        except ValueError:
+                            pass # 変換失敗時は無視（デフォルト値のまま）
+                            
+                    elif tag in ["subseed_strength", "cfg_scale"]:
+                        try:
+                            parsed[tag] = float(val_str)
+                        except ValueError:
+                            pass
+                            
+                    elif tag in ["restore_faces", "tiling", "do_not_save_samples", "do_not_save_grid"]:
+                        parsed[tag] = (val_str == "true")
+                        
+                    else:
+                        # 文字列型（outpath_samples, outpath_grids, prompt_for_display, styles, sampler_name など）
+                        parsed[tag] = val_str
+            else:
+                # オプションでないトークンは無視（通常ここには来ないはずだが、先頭が -- でない場合など）
+                i += 1
+
+        return parsed
+
+class ParsePromptFullNode:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "text": ("STRING", {"forceInput": True, "multiline": True, "default": ""}),
+            },
+        }
+
+    RETURN_TYPES = (
+        "STRING", "STRING", "INT", "INT", "INT", "INT", "FLOAT", "INT", 
+        "STRING", "STRING", "STRING", "STRING", "STRING", "INT", "INT", 
+        "INT", "INT", "INT", "FLOAT", "BOOLEAN", "BOOLEAN", "BOOLEAN", "BOOLEAN"
+    )
+    RETURN_NAMES = (
+        "prompt", "negative_prompt", "seed", "steps", "width", "height", "cfg_scale", "batch_size",
+        "outpath_samples", "outpath_grids", "prompt_for_display", "styles", "sampler_name", "subseed",
+        "seed_resize_from_h", "seed_resize_from_w", "sampler_index", "n_iter", "subseed_strength",
+        "restore_faces", "tiling", "do_not_save_samples", "do_not_save_grid"
+    )
+    OUTPUT_IS_LIST = (False,) * 23
+    FUNCTION = "parse"
+    CATEGORY = "text"
+
+    def parse(self, text):
+        p = PromptParser.parse(text)
+        return (
+            p["prompt"], p["negative_prompt"], p["seed"], p["steps"], p["width"], p["height"], p["cfg_scale"], p["batch_size"],
+            p["outpath_samples"], p["outpath_grids"], p["prompt_for_display"], p["styles"], p["sampler_name"], p["subseed"],
+            p["seed_resize_from_h"], p["seed_resize_from_w"], p["sampler_index"], p["n_iter"], p["subseed_strength"],
+            p["restore_faces"], p["tiling"], p["do_not_save_samples"], p["do_not_save_grid"]
+        )
+
+class ParsePromptSimpleNode:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "text": ("STRING", {"forceInput": True, "multiline": True, "default": ""}),
+            },
+        }
+
+    RETURN_TYPES = (
+        "STRING", "STRING", "INT", "INT", "INT", "INT", "FLOAT", "INT", 
+        "STRING", "STRING", "STRING"
+    )
+    RETURN_NAMES = (
+        "prompt", "negative_prompt", "seed", "steps", "width", "height", "cfg_scale", "batch_size",
+        "outpath_samples", "outpath_grids", "prompt_for_display"
+    )
+    OUTPUT_IS_LIST = (False,) * 11
+    FUNCTION = "parse"
+    CATEGORY = "text"
+
+    def parse(self, text):
+        p = PromptParser.parse(text)
+        return (
+            p["prompt"], p["negative_prompt"], p["seed"], p["steps"], p["width"], p["height"], p["cfg_scale"], p["batch_size"],
+            p["outpath_samples"], p["outpath_grids"], p["prompt_for_display"]
+        )
+
 NODE_CLASS_MAPPINGS = {
     "LoadTextFile": LoadTextFileNode,
     "SaveTextFile": SaveTextFileNode,
@@ -397,6 +564,8 @@ NODE_CLASS_MAPPINGS = {
     "ProcessWildcard": ProcessWildcardNode,
     "ReplaceVariablesAndProcessWildcard": ReplaceVariablesAndProcessWildcardNode,
     "ConditionalTagProcessorNode": ConditionalTagProcessorNode,
+    "ParsePromptFull": ParsePromptFullNode,
+    "ParsePromptSimple": ParsePromptSimpleNode,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -410,4 +579,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ProcessWildcard": "Process Wildcard",
     "ReplaceVariablesAndProcessWildcard": "Replace Variables and Process Wildcard (Loop)",
     "ConditionalTagProcessorNode": "Conditional Tag Processor",
+    "ParsePromptFull": "Parse Prompt (Full)",
+    "ParsePromptSimple": "Parse Prompt (Simple)",
 }
