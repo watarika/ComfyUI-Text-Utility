@@ -433,6 +433,15 @@ class PromptParser:
         parsed = defaults.copy()
         
         i = 0
+        
+        # 最初の "--" が来る前のトークンを初期プロンプトとして収集（A1111形式との互換性）
+        initial_prompt_tokens = []
+        while i < len(args) and not args[i].startswith("--"):
+            initial_prompt_tokens.append(args[i])
+            i += 1
+        if initial_prompt_tokens:
+            parsed["prompt"] = " ".join(initial_prompt_tokens)
+        
         while i < len(args):
             token = args[i]
             
@@ -487,7 +496,7 @@ class PromptParser:
                         # 文字列型（outpath_samples, outpath_grids, prompt_for_display, styles, sampler_name など）
                         parsed[tag] = val_str
             else:
-                # オプションでないトークンは無視（通常ここには来ないはずだが、先頭が -- でない場合など）
+                # オプションでないトークンはスキップ（初期プロンプトは既に処理済み）
                 i += 1
 
         return parsed
