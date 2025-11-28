@@ -48,9 +48,11 @@ overwriteをFalseにするとファイルが存在した場合は何も行いま
 ![image](https://github.com/user-attachments/assets/83bcb582-e173-4d12-bafd-5a91271aeeaa)
 
 バッチカウントを使ってバッチ実行した場合、実行するたびにstart行からインクリメントしながら1行ずつ取り出します。  
-Webui の Prompts from file or textbox のような使い方ができます。
+WebUI(A1111) の Prompts from file or textbox のような使い方ができます。
 
 ワイルドカードを使用する場合は「Prompts from textbox」を使ってください。
+
+コマンドライン形式の引数を使用する場合は「Parse Prompt (Full)」または「Parse Prompt (Custom)」を使ってください。
 
 - text: 抽出する元となるテキスト（複数行）
 - start: 開始する行
@@ -135,8 +137,65 @@ Impact Pack のワイルドカードを展開するための単機能ノード�
 詳細は <a href="doc/ConditionalTagProcessor_ja.md">Conditional Tag Processor</a> を参照してください。
 
 
+## Parse Prompt (Full)
+
+コマンドライン形式の引数（例：`--width 512 --seed 123`）を含むプロンプト文字列を解析し、対応するすべてのパラメータを出力します。  
+WebUI(A1111) の Prompts from file or textbox と同様のフォーマットです。
+
+![image](doc/image/Parse_Prompt_Full.png)
+
+- **入力**:
+  - `text`: 解析するプロンプト文字列
+- **出力**:
+  - サポートされているすべてのタグの値を出力します
+
+### サポートされているタグ
+
+| タグ名 | 型 | 説明 |
+| :--- | :--- | :--- |
+| `prompt` | STRING | プロンプト（ポジティブ） |
+| `negative_prompt` | STRING | ネガティブプロンプト |
+| `seed` | INT | シード値 |
+| `steps` | INT | ステップ数 |
+| `width` | INT | 画像の幅 |
+| `height` | INT | 画像の高さ |
+| `cfg_scale` | FLOAT | CFGスケール |
+| `batch_size` | INT | バッチサイズ |
+| `outpath_samples` | STRING | サンプル画像の保存先パス |
+| `outpath_grids` | STRING | グリッド画像の保存先パス |
+| `prompt_for_display` | STRING | 表示用プロンプト |
+| `styles` | STRING | スタイル名 |
+| `sampler_name` | STRING | サンプラー名 |
+| `subseed` | INT | サブシード値 |
+| `seed_resize_from_h` | INT | シードリサイズ元の高さ |
+| `seed_resize_from_w` | INT | シードリサイズ元の幅 |
+| `sampler_index` | INT | サンプラーインデックス |
+| `n_iter` | INT | 繰り返し回数 |
+| `subseed_strength` | FLOAT | サブシード強度 |
+| `restore_faces` | BOOLEAN | 顔修復を有効にするか |
+| `tiling` | BOOLEAN | タイリングを有効にするか |
+| `do_not_save_samples` | BOOLEAN | サンプル画像を保存しない |
+| `do_not_save_grid` | BOOLEAN | グリッド画像を保存しない |
+
+## Parse Prompt (Custom)
+
+`Parse Prompt (Full)` と同じ機能ですが、必要な出力ピンのみを動的に選択して表示できます。
+
+![image](doc/image/Parse_Prompt_Custom.png)
+
+- **入力**:
+  - `text`: 解析するプロンプト文字列
+- **出力**:
+  - 動的に選択された出力
+- **使い方**:
+  - "Tag to Add/Remove" ドロップダウンからタグを選択します
+  - "Add Output" ボタンをクリックすると、そのタグの出力ピンが追加されます
+  - "Remove Output" ボタンをクリックすると、選択したタグの出力ピンが削除されます
+
 ## 変更履歴
 
+- V1.6.0 (2025-11-29)
+  - `Parse Prompt (Full)` ノードと `Parse Prompt (Custom)` ノードを追加
 - V1.5.3 (2025-11-28)
   - 必要な場合のみ `ComfyUI-Impact-Pack` をインポートするように変更
 - V1.5.2 (2025-11-28)

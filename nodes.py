@@ -507,10 +507,10 @@ class ParsePromptFullNode:
         "INT", "INT", "INT", "FLOAT", "BOOLEAN", "BOOLEAN", "BOOLEAN", "BOOLEAN"
     )
     RETURN_NAMES = (
-        "prompt", "negative_prompt", "seed", "steps", "width", "height", "cfg_scale", "batch_size",
-        "outpath_samples", "outpath_grids", "prompt_for_display", "styles", "sampler_name", "subseed",
-        "seed_resize_from_h", "seed_resize_from_w", "sampler_index", "n_iter", "subseed_strength",
-        "restore_faces", "tiling", "do_not_save_samples", "do_not_save_grid"
+        "prompt (STRING)", "negative_prompt (STRING)", "seed (INT)", "steps (INT)", "width (INT)", "height (INT)", "cfg_scale (FLOAT)", "batch_size (INT)",
+        "outpath_samples (STRING)", "outpath_grids (STRING)", "prompt_for_display (STRING)", "styles (STRING)", "sampler_name (STRING)", "subseed (INT)",
+        "seed_resize_from_h (INT)", "seed_resize_from_w (INT)", "sampler_index (INT)", "n_iter (INT)", "subseed_strength (FLOAT)",
+        "restore_faces (BOOLEAN)", "tiling (BOOLEAN)", "do_not_save_samples (BOOLEAN)", "do_not_save_grid (BOOLEAN)"
     )
     OUTPUT_IS_LIST = (False,) * 23
     FUNCTION = "parse"
