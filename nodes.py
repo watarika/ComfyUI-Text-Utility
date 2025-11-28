@@ -1,11 +1,21 @@
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../ComfyUI-Impact-Pack/modules')))
-import impact
-import impact.wildcards
 import re
 import math
 from .cond_tag_processor import ConditionalTagProcessorNode
+
+def get_impact_wildcards():
+    try:
+        import impact.wildcards
+        return impact.wildcards
+    except ImportError:
+        import sys
+        import os
+        impact_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../ComfyUI-Impact-Pack/modules'))
+        if impact_path not in sys.path:
+            sys.path.append(impact_path)
+        import impact.wildcards
+        return impact.wildcards
 
 class LoadTextFileNode:
 
@@ -235,7 +245,7 @@ class PromptsFromTextboxNode:
     def doit(self, wildcard_text, seed, start, mode, repeats_per_line, counter):
         line_count = math.ceil(counter / repeats_per_line)
         target_string = StringsFromTextboxNode.extract_line(wildcard_text, start, mode, line_count)
-        result = impact.wildcards.process(target_string, seed)
+        result = get_impact_wildcards().process(target_string, seed)
         return (result, str(start + line_count - 1), str(counter), )
 
 
@@ -305,7 +315,7 @@ class ProcessWildcardNode:
     FUNCTION = "doit"
 
     def doit(self, wildcard_text, seed):
-        result = impact.wildcards.process(wildcard_text, seed)
+        result = get_impact_wildcards().process(wildcard_text, seed)
         return (result, )
 
 
@@ -344,7 +354,7 @@ class ReplaceVariablesAndProcessWildcardNode:
 
         for _ in range(loop_count):
             work_text = ReplaceVariablesNode.replace_variables(work_text, var_defs)
-            work_text = impact.wildcards.process(work_text, seed)
+            work_text = get_impact_wildcards().process(work_text, seed)
 
         # 未定義変数の削除
         if remove_undefined_variables:

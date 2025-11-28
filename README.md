@@ -135,6 +135,8 @@ For details, see <a href="doc/ConditionalTagProcessor.md">Conditional Tag Proces
 
 ## Changelog
 
+- V1.5.3 (2025-11-28)
+  - Changed to import `ComfyUI-Impact-Pack` only when needed
 - V1.5.2 (2025-11-28)
   - Added `Strings to List` node
 - V1.5.1 (2025-10-01)
