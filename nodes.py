@@ -553,6 +553,47 @@ class ParsePromptSimpleNode:
             p["outpath_samples"], p["outpath_grids"], p["prompt_for_display"]
         )
 
+class AnyType(str):
+    def __ne__(self, __value: object) -> bool:
+        return False
+
+class ParsePromptCustomNode:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "text": ("STRING", {"forceInput": True, "multiline": True, "default": ""}),
+            },
+            "optional": {
+                "tags": ("STRING", {"default": ""}),
+            }
+        }
+
+    # 大量の出力を許容するためにワイルドカードを多数定義
+    # ComfyUIのバリデーションを回避するために AnyType を使用
+    RETURN_TYPES = (AnyType("*"),) * 50
+    FUNCTION = "parse"
+    CATEGORY = "text"
+
+    def parse(self, text, tags=""):
+        print(f"DEBUG: ParsePromptCustomNode parse called with tags='{tags}'")
+        p = PromptParser.parse(text)
+        
+        if not tags:
+            # タグがない場合は prompt だけ返す
+            return (p["prompt"],)
+
+        tag_list = tags.split(",")
+        results = []
+        for tag in tag_list:
+            tag = tag.strip()
+            # PromptParserの結果から値を取得
+            # 存在しないタグの場合は空文字を返す（エラー回避）
+            val = p.get(tag, "")
+            results.append(val)
+        
+        return tuple(results)
+
 NODE_CLASS_MAPPINGS = {
     "LoadTextFile": LoadTextFileNode,
     "SaveTextFile": SaveTextFileNode,
@@ -566,6 +607,7 @@ NODE_CLASS_MAPPINGS = {
     "ConditionalTagProcessorNode": ConditionalTagProcessorNode,
     "ParsePromptFull": ParsePromptFullNode,
     "ParsePromptSimple": ParsePromptSimpleNode,
+    "ParsePromptCustom": ParsePromptCustomNode,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -581,4 +623,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ConditionalTagProcessorNode": "Conditional Tag Processor",
     "ParsePromptFull": "Parse Prompt (Full)",
     "ParsePromptSimple": "Parse Prompt (Simple)",
+    "ParsePromptCustom": "Parse Prompt (Custom)",
 }
