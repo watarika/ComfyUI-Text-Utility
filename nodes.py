@@ -454,7 +454,7 @@ class PromptParser:
                     current_val = parsed.get(tag, "")
                     new_val = " ".join(values)
                     if current_val:
-                         parsed[tag] = current_val + ", " + new_val
+                        parsed[tag] = current_val + ", " + new_val
                     else:
                         parsed[tag] = new_val
                     
@@ -478,10 +478,10 @@ class PromptParser:
                         try:
                             parsed[tag] = float(val_str)
                         except ValueError:
-                            pass
+                            pass  # 変換失敗時は無視（デフォルト値のまま）
                             
                     elif tag in ["restore_faces", "tiling", "do_not_save_samples", "do_not_save_grid"]:
-                        parsed[tag] = (val_str == "true")
+                        parsed[tag] = (val_str.lower() == "true")
                         
                     else:
                         # 文字列型（outpath_samples, outpath_grids, prompt_for_display, styles, sampler_name など）
@@ -494,7 +494,7 @@ class PromptParser:
 
 class ParsePromptFullNode:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
                 "text": ("STRING", {"forceInput": True, "multiline": True, "default": ""}),
@@ -527,12 +527,16 @@ class ParsePromptFullNode:
 
 
 class AnyType(str):
+    """ComfyUIのワイルドカード型。任意の型にマッチするために__eq__は常にTrueを返す"""
+    def __eq__(self, __value: object) -> bool:
+        return True
+    
     def __ne__(self, __value: object) -> bool:
         return False
 
 class ParsePromptCustomNode:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
                 "text": ("STRING", {"forceInput": True, "multiline": True, "default": ""}),
@@ -550,7 +554,6 @@ class ParsePromptCustomNode:
     CATEGORY = "text"
 
     def parse(self, text, tags=""):
-        print(f"DEBUG: ParsePromptCustomNode parse called with tags='{tags}'")
         p = PromptParser.parse(text)
         
         if not tags:
