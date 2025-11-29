@@ -11,6 +11,8 @@ app.registerExtension({
 				this.serialize_widgets = true;
 
 				// 定義済みタグと型のマッピング
+				// NOTE: Keep this in sync with the defaults dictionary in PromptParser.parse() in nodes.py.
+				// Any changes to supported tags must be reflected in both files.
 				const availableTags = {
 					"prompt": "STRING",
 					"negative_prompt": "STRING",
@@ -108,17 +110,27 @@ app.registerExtension({
 					}
 				}
 
-				// 初期化処理
-				setTimeout(() => {
+				// 初期化処理（リトライロジックで堅牢化）
+				const initializeNode = (node, retryCount = 0) => {
+					const MAX_RETRIES = 10;
+					const RETRY_DELAY = 50;
+
 					// tags 保存用ウィジェットを探して隠す
-					let tagsWidget = this.widgets ? this.widgets.find(w => w.name === "tags") : null;
+					let tagsWidget = node.widgets ? node.widgets.find(w => w.name === "tags") : null;
+					
+					if (!tagsWidget && retryCount < MAX_RETRIES) {
+						// ウィジェットがまだ準備できていない場合はリトライ
+						setTimeout(() => initializeNode(node, retryCount + 1), RETRY_DELAY);
+						return;
+					}
+
 					if (tagsWidget) {
 						tagsWidget.type = "text";
 						tagsWidget.computeSize = () => [0, -4];
 						tagsWidget.hidden = true;
 					} else {
 						// なければ作る
-						tagsWidget = this.addWidget("text", "tags", "", (v) => { });
+						tagsWidget = node.addWidget("text", "tags", "", (v) => { });
 						tagsWidget.type = "text";
 						tagsWidget.computeSize = () => [0, -4];
 						tagsWidget.hidden = true;
@@ -126,28 +138,42 @@ app.registerExtension({
 
 					// 新規作成時（tagsWidgetが空）はデフォルトで prompt を追加
 					if (!tagsWidget.value) {
-						if (this.outputs) {
+						if (node.outputs) {
 							// 全削除
-							for (let i = this.outputs.length - 1; i >= 0; i--) {
-								this.removeOutput(i);
+							for (let i = node.outputs.length - 1; i >= 0; i--) {
+								node.removeOutput(i);
 							}
 						}
 						// prompt 追加
 						const defaultTag = "prompt";
 						const defaultType = availableTags[defaultTag];
-						this.addOutput(`${defaultTag} (${defaultType})`, defaultType);
-						updateTagsWidget(this);
+						node.addOutput(`${defaultTag} (${defaultType})`, defaultType);
+						updateTagsWidget(node);
 					}
 
-					this.setSize(this.computeSize());
-				}, 50);
+					node.setSize(node.computeSize());
+				};
+
+				// 初回初期化開始（requestAnimationFrameでより確実なタイミング制御）
+				requestAnimationFrame(() => initializeNode(this));
+
+				// onConfigure用の更新処理（リトライロジック付き）
+				const updateTagsWithRetry = (node, retryCount = 0) => {
+					const MAX_RETRIES = 10;
+					const RETRY_DELAY = 50;
+
+					const tagsWidget = node.widgets ? node.widgets.find(w => w.name === "tags") : null;
+					if (!tagsWidget && retryCount < MAX_RETRIES) {
+						setTimeout(() => updateTagsWithRetry(node, retryCount + 1), RETRY_DELAY);
+						return;
+					}
+					updateTagsWidget(node);
+				};
 
 				const onConfigure = this.onConfigure;
 				this.onConfigure = function () {
 					if (onConfigure) onConfigure.apply(this, arguments);
-					setTimeout(() => {
-						updateTagsWidget(this);
-					}, 50);
+					requestAnimationFrame(() => updateTagsWithRetry(this));
 				};
 
 				return r;
