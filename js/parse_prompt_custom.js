@@ -11,8 +11,6 @@ app.registerExtension({
 				this.serialize_widgets = true;
 
 				// 定義済みタグと型のマッピング
-				// NOTE: Keep this in sync with the defaults dictionary in PromptParser.parse() in nodes.py.
-				// Any changes to supported tags must be reflected in both files.
 				const availableTags = {
 					"prompt": "STRING",
 					"negative_prompt": "STRING",
@@ -110,70 +108,92 @@ app.registerExtension({
 					}
 				}
 
-				// 初期化処理（リトライロジックで堅牢化）
-				const initializeNode = (node, retryCount = 0) => {
-					const MAX_RETRIES = 10;
-					const RETRY_DELAY = 50;
+				// 初期化処理（同期実行）
+				// tags 保存用ウィジェットを探して隠す
+				let tagsWidget = this.widgets ? this.widgets.find(w => w.name === "tags") : null;
 
-					// tags 保存用ウィジェットを探して隠す
-					let tagsWidget = node.widgets ? node.widgets.find(w => w.name === "tags") : null;
-					
-					if (!tagsWidget && retryCount < MAX_RETRIES) {
-						// ウィジェットがまだ準備できていない場合はリトライ
-						setTimeout(() => initializeNode(node, retryCount + 1), RETRY_DELAY);
-						return;
-					}
+				if (tagsWidget) {
+					tagsWidget.type = "text";
+					tagsWidget.computeSize = () => [0, -4];
+					tagsWidget.hidden = true;
+				} else {
+					// なければ作る
+					tagsWidget = this.addWidget("text", "tags", "", (v) => { });
+					tagsWidget.type = "text";
+					tagsWidget.computeSize = () => [0, -4];
+					tagsWidget.hidden = true;
+				}
 
-					if (tagsWidget) {
-						tagsWidget.type = "text";
-						tagsWidget.computeSize = () => [0, -4];
-						tagsWidget.hidden = true;
-					} else {
-						// なければ作る
-						tagsWidget = node.addWidget("text", "tags", "", (v) => { });
-						tagsWidget.type = "text";
-						tagsWidget.computeSize = () => [0, -4];
-						tagsWidget.hidden = true;
-					}
+				// 新規作成時（tagsWidgetが空）はデフォルトで prompt を追加
+				// ただし、ロード時も最初は空なので、outputsの状態を見て判断する
+				if (!tagsWidget.value) {
+					// デフォルト出力（Python定義の大量のワイルドカード）かどうかを判定
+					// 名前がすべて "*" だったり、型情報を含まない場合はデフォルトとみなす
+					const isDefaultOutputs = this.outputs && this.outputs.length > 0 && !this.outputs[0].name.includes("(");
 
-					// 新規作成時（tagsWidgetが空）はデフォルトで prompt を追加
-					if (!tagsWidget.value) {
-						if (node.outputs) {
+					if (isDefaultOutputs) {
+						if (this.outputs) {
 							// 全削除
-							for (let i = node.outputs.length - 1; i >= 0; i--) {
-								node.removeOutput(i);
+							for (let i = this.outputs.length - 1; i >= 0; i--) {
+								this.removeOutput(i);
 							}
 						}
 						// prompt 追加
 						const defaultTag = "prompt";
 						const defaultType = availableTags[defaultTag];
-						node.addOutput(`${defaultTag} (${defaultType})`, defaultType);
-						updateTagsWidget(node);
+						this.addOutput(`${defaultTag} (${defaultType})`, defaultType);
+						updateTagsWidget(this);
 					}
+				}
 
-					node.setSize(node.computeSize());
-				};
-
-				// 初回初期化開始（requestAnimationFrameでより確実なタイミング制御）
-				requestAnimationFrame(() => initializeNode(this));
-
-				// onConfigure用の更新処理（リトライロジック付き）
-				const updateTagsWithRetry = (node, retryCount = 0) => {
-					const MAX_RETRIES = 10;
-					const RETRY_DELAY = 50;
-
-					const tagsWidget = node.widgets ? node.widgets.find(w => w.name === "tags") : null;
-					if (!tagsWidget && retryCount < MAX_RETRIES) {
-						setTimeout(() => updateTagsWithRetry(node, retryCount + 1), RETRY_DELAY);
-						return;
-					}
-					updateTagsWidget(node);
-				};
+				this.setSize(this.computeSize());
 
 				const onConfigure = this.onConfigure;
 				this.onConfigure = function () {
 					if (onConfigure) onConfigure.apply(this, arguments);
-					requestAnimationFrame(() => updateTagsWithRetry(this));
+
+					// 保存された tagsWidget の値に基づいて出力を同期する
+					// 既存の接続（リンク）を維持するため、全削除せずに差分更新を行う
+					const tagsWidget = this.widgets ? this.widgets.find(w => w.name === "tags") : null;
+					if (tagsWidget && tagsWidget.value) {
+						const savedTags = tagsWidget.value.split(",");
+						const desiredOutputNames = [];
+
+						// 必要な出力名のリストを作成
+						for (const tag of savedTags) {
+							const tagName = tag.trim();
+							if (!tagName) continue;
+							const type = availableTags[tagName] || "STRING";
+							desiredOutputNames.push(`${tagName} (${type})`);
+						}
+
+						// 1. 不要な出力を削除
+						// 後ろからループしてインデックスずれを防ぐ
+						if (this.outputs) {
+							for (let i = this.outputs.length - 1; i >= 0; i--) {
+								const output = this.outputs[i];
+								if (!desiredOutputNames.includes(output.name)) {
+									this.removeOutput(i);
+								}
+							}
+						}
+
+						// 2. 足りない出力を追加
+						// 順序を維持するために、desiredOutputNames の順にチェックして追加したいが、
+						// 既存のリンクを壊さずに順序を変えるのは難しい。
+						// ここでは「存在しないものだけ末尾に追加」する方針とする。
+						for (const outputName of desiredOutputNames) {
+							if (this.findOutputSlot(outputName) === -1) {
+								const match = outputName.match(/^(.*)\s\((.*)\)$/);
+								if (match) {
+									const type = match[2];
+									this.addOutput(outputName, type);
+								}
+							}
+						}
+					}
+
+					this.setSize(this.computeSize());
 				};
 
 				return r;
