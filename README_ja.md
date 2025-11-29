@@ -48,7 +48,7 @@ overwriteをFalseにするとファイルが存在した場合は何も行いま
 ![image](https://github.com/user-attachments/assets/83bcb582-e173-4d12-bafd-5a91271aeeaa)
 
 バッチカウントを使ってバッチ実行した場合、実行するたびにstart行からインクリメントしながら1行ずつ取り出します。  
-WebUI(A1111) の Prompts from file or textbox のような使い方ができます。
+WebUI (A1111) の Prompts from file or textbox のような使い方ができます。
 
 ワイルドカードを使用する場合は「Prompts from textbox」を使ってください。
 
