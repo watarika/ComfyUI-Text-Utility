@@ -48,9 +48,11 @@ Extracts a single line from multiple lines of text entered in a textbox.
 ![image](https://github.com/user-attachments/assets/83bcb582-e173-4d12-bafd-5a91271aeeaa)
 
 When executed in batch using batch count, it takes out one line at a time, incrementing from the start line each time it is executed.
-You can use it like Webui's Prompts from file or textbox.
+You can use it like WebUI (A1111)'s Prompts from file or textbox.
 
 If you want to use wildcards, use "Prompts from textbox".
+
+If you want to use command-line style arguments, use "Parse Prompt (Full)" or "Parse Prompt (Custom)".
 
 - text: Source text (multiple lines) to be extracted
 - start: The line to start with
@@ -133,8 +135,66 @@ Replaces variables and then expands wildcards, in that order, repeating the pair
 Adds or removes tags when conditions match.\
 For details, see <a href="doc/ConditionalTagProcessor.md">Conditional Tag Processor</a>.
 
+## Parse Prompt (Full)
+
+Parses a prompt string containing command-line style arguments (e.g., `--width 512 --seed 123`) and outputs all supported parameters.  
+This is the same format as WebUI (A1111)'s "Prompts from file or textbox".
+
+
+![image](doc/image/Parse_Prompt_Full.png)
+
+- **Input**:
+  - `text`: The prompt string to parse.
+- **Output**:
+  - Returns values for all supported tags.
+
+### Supported Tags
+
+| Tag | Type | Description |
+| :--- | :--- | :--- |
+| `prompt` | STRING | The main prompt text. |
+| `negative_prompt` | STRING | The negative prompt text. |
+| `seed` | INT | Seed value. |
+| `steps` | INT | Sampling steps. |
+| `width` | INT | Image width. |
+| `height` | INT | Image height. |
+| `cfg_scale` | FLOAT | CFG Scale. |
+| `batch_size` | INT | Batch size. |
+| `outpath_samples` | STRING | Output path for samples. |
+| `outpath_grids` | STRING | Output path for grids. |
+| `prompt_for_display` | STRING | Prompt for display purposes. |
+| `styles` | STRING | Style names. |
+| `sampler_name` | STRING | Sampler name. |
+| `subseed` | INT | Subseed value. |
+| `seed_resize_from_h` | INT | Seed resize from height. |
+| `seed_resize_from_w` | INT | Seed resize from width. |
+| `sampler_index` | INT | Sampler index. |
+| `n_iter` | INT | Number of iterations. |
+| `subseed_strength` | FLOAT | Subseed strength. |
+| `restore_faces` | BOOLEAN | Enable face restoration. |
+| `tiling` | BOOLEAN | Enable tiling. |
+| `do_not_save_samples` | BOOLEAN | Do not save samples. |
+| `do_not_save_grid` | BOOLEAN | Do not save grids. |
+
+## Parse Prompt (Custom)
+
+Same as `Parse Prompt (Full)`, but allows you to dynamically select which outputs to display.
+
+![image](doc/image/Parse_Prompt_Custom.png)
+
+- **Input**:
+  - `text`: The prompt string to parse.
+- **Output**:
+  - Dynamically selected outputs.
+- **Usage**:
+  - Select a tag from the "Tag to Add/Remove" dropdown.
+  - Click "Add Output" to add the output pin.
+  - Click "Remove Output" to remove the selected output pin.
+
 ## Changelog
 
+- V1.6.0 (2025-11-29)
+  - Added `Parse Prompt (Full)` node and `Parse Prompt (Custom)` node
 - V1.5.3 (2025-11-28)
   - Changed to import `ComfyUI-Impact-Pack` only when needed
 - V1.5.2 (2025-11-28)

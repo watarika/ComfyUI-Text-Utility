@@ -2,6 +2,7 @@ import sys
 import os
 import re
 import math
+import shlex
 from .cond_tag_processor import ConditionalTagProcessorNode
 
 def get_impact_wildcards():
@@ -386,6 +387,228 @@ class ReplaceVariablesAndProcessWildcardNode:
         # 先頭・末尾の不要な空白・改行を除去
         return (work_text.strip(),)
 
+class PromptParser:
+    """
+    Parses A1111-style prompts with command-line arguments.
+
+    Supports formats like:
+    - "beautiful scenery --seed 123 --width 512"
+    - "--prompt beautiful scenery --negative_prompt ugly --seed 123"
+
+    Args:
+        text (str): The prompt string to parse. Can be a plain prompt or include
+                   command-line style arguments.
+
+    Returns:
+        dict: A dictionary containing all parsed parameters and their default values.
+    """
+    # Maximum input length to prevent DoS attacks with extremely large strings
+    MAX_INPUT_LENGTH = 100000
+
+    @staticmethod
+    def parse(text):
+        # デフォルト値の定義
+        defaults = {
+            "prompt": "",
+            "negative_prompt": "",
+            "seed": -1,
+            "steps": 20,
+            "width": 512,
+            "height": 512,
+            "cfg_scale": 7.0,
+            "batch_size": 1,
+            "outpath_samples": "",
+            "outpath_grids": "",
+            "prompt_for_display": "",
+            "styles": "",
+            "sampler_name": "",
+            "subseed": -1,
+            "seed_resize_from_h": 0,
+            "seed_resize_from_w": 0,
+            "sampler_index": 0,
+            "n_iter": 1,
+            "subseed_strength": 0.0,
+            "restore_faces": False,
+            "tiling": False,
+            "do_not_save_samples": False,
+            "do_not_save_grid": False,
+        }
+
+        # 入力長を制限（DoS攻撃対策）
+        if len(text) > PromptParser.MAX_INPUT_LENGTH:
+            defaults["prompt"] = text[:PromptParser.MAX_INPUT_LENGTH]
+            return defaults
+
+        # 行に "--" が含まれていない場合は、全体を prompt として扱う
+        if "--" not in text:
+            defaults["prompt"] = text
+            return defaults
+
+        try:
+            # shlex で分割
+            args = shlex.split(text)
+        except ValueError:
+            # パースエラー（引用符の閉じ忘れなど）の場合は、全体を prompt として扱う
+            defaults["prompt"] = text
+            return defaults
+
+        parsed = defaults.copy()
+        
+        i = 0
+        
+        # 最初の "--" が来る前のトークンを初期プロンプトとして収集（A1111形式との互換性）
+        # 例: "beautiful scenery --seed 123" → prompt="beautiful scenery"
+        initial_prompt_tokens = []
+        while i < len(args) and not args[i].startswith("--"):
+            initial_prompt_tokens.append(args[i])
+            i += 1
+        if initial_prompt_tokens:
+            parsed["prompt"] = " ".join(initial_prompt_tokens)
+        
+        while i < len(args):
+            token = args[i]
+            
+            if token.startswith("--"):
+                tag = token[2:] # "--" を除去
+                i += 1
+                
+                if i >= len(args):
+                    print(f"Warning: Tag '--{tag}' is missing a value")
+                    break
+                
+                # prompt, negative_prompt は次の -- が来るまで結合
+                if tag in ["prompt", "negative_prompt"]:
+                    values = []
+                    while i < len(args) and not args[i].startswith("--"):
+                        values.append(args[i])
+                        i += 1
+                    
+                    # 既存の値がある場合は連結（重複カンマを防ぐ）
+                    current_val = parsed.get(tag, "")
+                    new_val = " ".join(values)
+                    if current_val:
+                        # Split both values by comma, strip whitespace, remove empties, then join
+                        parts = [p.strip() for p in current_val.split(",") if p.strip()] + [p.strip() for p in new_val.split(",") if p.strip()]
+                        parsed[tag] = ", ".join(parts)
+                    else:
+                        # Sanitize new_val as well
+                        parts = [p.strip() for p in new_val.split(",") if p.strip()]
+                        parsed[tag] = ", ".join(parts)
+                    
+                    # ループのインクリメントは while 内で行われているのでここでは不要
+                    continue
+
+                # その他のタグは1トークンだけ取得
+                else:
+                    val_str = args[i]
+                    i += 1
+                    
+                    # 型変換
+                    if tag in ["seed", "subseed", "seed_resize_from_h", "seed_resize_from_w", 
+                               "sampler_index", "batch_size", "n_iter", "steps", "width", "height"]:
+                        try:
+                            parsed[tag] = int(val_str)
+                        except ValueError:
+                            pass # 変換失敗時は無視（デフォルト値のまま）
+                            
+                    elif tag in ["subseed_strength", "cfg_scale"]:
+                        try:
+                            parsed[tag] = float(val_str)
+                        except ValueError:
+                            pass  # 変換失敗時は無視（デフォルト値のまま）
+                            
+                    elif tag in ["restore_faces", "tiling", "do_not_save_samples", "do_not_save_grid"]:
+                        parsed[tag] = (val_str.lower() == "true")
+                        
+                    else:
+                        # 文字列型（outpath_samples, outpath_grids, prompt_for_display, styles, sampler_name など）
+                        parsed[tag] = val_str
+            else:
+                # オプションでないトークンはスキップ（初期プロンプトは既に処理済み）
+                i += 1
+
+        return parsed
+
+class ParsePromptFullNode:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "text": ("STRING", {"forceInput": True, "multiline": True, "default": ""}),
+            },
+        }
+
+    RETURN_TYPES = (
+        "STRING", "STRING", "INT", "INT", "INT", "INT", "FLOAT", "INT", 
+        "STRING", "STRING", "STRING", "STRING", "STRING", "INT", "INT", 
+        "INT", "INT", "INT", "FLOAT", "BOOLEAN", "BOOLEAN", "BOOLEAN", "BOOLEAN"
+    )
+    RETURN_NAMES = (
+        "prompt (STRING)", "negative_prompt (STRING)", "seed (INT)", "steps (INT)", "width (INT)", "height (INT)", "cfg_scale (FLOAT)", "batch_size (INT)",
+        "outpath_samples (STRING)", "outpath_grids (STRING)", "prompt_for_display (STRING)", "styles (STRING)", "sampler_name (STRING)", "subseed (INT)",
+        "seed_resize_from_h (INT)", "seed_resize_from_w (INT)", "sampler_index (INT)", "n_iter (INT)", "subseed_strength (FLOAT)",
+        "restore_faces (BOOLEAN)", "tiling (BOOLEAN)", "do_not_save_samples (BOOLEAN)", "do_not_save_grid (BOOLEAN)"
+    )
+    OUTPUT_IS_LIST = (False,) * 23
+    FUNCTION = "parse"
+    CATEGORY = "text"
+
+    def parse(self, text):
+        p = PromptParser.parse(text)
+        return (
+            p["prompt"], p["negative_prompt"], p["seed"], p["steps"], p["width"], p["height"], p["cfg_scale"], p["batch_size"],
+            p["outpath_samples"], p["outpath_grids"], p["prompt_for_display"], p["styles"], p["sampler_name"], p["subseed"],
+            p["seed_resize_from_h"], p["seed_resize_from_w"], p["sampler_index"], p["n_iter"], p["subseed_strength"],
+            p["restore_faces"], p["tiling"], p["do_not_save_samples"], p["do_not_save_grid"]
+        )
+
+
+class AnyType(str):
+    """ComfyUIのワイルドカード型。任意の型にマッチするために__eq__は常にTrueを返す"""
+    def __eq__(self, __value: object) -> bool:
+        return True
+    
+    def __ne__(self, __value: object) -> bool:
+        return False
+
+class ParsePromptCustomNode:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "text": ("STRING", {"forceInput": True, "multiline": True, "default": ""}),
+            },
+            "optional": {
+                "tags": ("STRING", {"default": ""}),
+            }
+        }
+
+    # 大量の出力を許容するためにワイルドカードを多数定義
+    # ComfyUIのバリデーションを回避するために AnyType を使用
+    # NOTE: This must match the number of outputs in ParsePromptFullNode.RETURN_NAMES.
+    # If ParsePromptFullNode.RETURN_NAMES is modified, this RETURN_TYPES count must also be updated.
+    RETURN_TYPES = (AnyType("*"),) * len(ParsePromptFullNode.RETURN_NAMES)
+    FUNCTION = "parse"
+    CATEGORY = "text"
+
+    def parse(self, text, tags=""):
+        p = PromptParser.parse(text)
+        
+        if not tags:
+            # タグがない場合は prompt だけ返す
+            return (p["prompt"],)
+
+        tag_list = tags.split(",")
+        results = []
+        for tag in tag_list:
+            tag = tag.strip()
+            # PromptParserの結果から値を取得
+            # 存在しないタグの場合は空文字を返す（エラー回避）
+            val = p.get(tag, "")
+            results.append(val)
+        
+        return tuple(results)
+
 NODE_CLASS_MAPPINGS = {
     "LoadTextFile": LoadTextFileNode,
     "SaveTextFile": SaveTextFileNode,
@@ -397,6 +620,8 @@ NODE_CLASS_MAPPINGS = {
     "ProcessWildcard": ProcessWildcardNode,
     "ReplaceVariablesAndProcessWildcard": ReplaceVariablesAndProcessWildcardNode,
     "ConditionalTagProcessorNode": ConditionalTagProcessorNode,
+    "ParsePromptFull": ParsePromptFullNode,
+    "ParsePromptCustom": ParsePromptCustomNode,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -410,4 +635,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ProcessWildcard": "Process Wildcard",
     "ReplaceVariablesAndProcessWildcard": "Replace Variables and Process Wildcard (Loop)",
     "ConditionalTagProcessorNode": "Conditional Tag Processor",
+    "ParsePromptFull": "Parse Prompt (Full)",
+    "ParsePromptCustom": "Parse Prompt (Custom)",
 }
