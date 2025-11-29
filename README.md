@@ -138,7 +138,7 @@ For details, see <a href="doc/ConditionalTagProcessor.md">Conditional Tag Proces
 ## Parse Prompt (Full)
 
 Parses a prompt string containing command-line style arguments (e.g., `--width 512 --seed 123`) and outputs all supported parameters.  
-This is the same format as WebUI(A1111)'s "Prompts from file or textbox".
+This is the same format as WebUI (A1111)'s "Prompts from file or textbox".
 
 
 ![image](doc/image/Parse_Prompt_Full.png)
