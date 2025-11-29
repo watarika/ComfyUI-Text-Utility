@@ -48,7 +48,7 @@ Extracts a single line from multiple lines of text entered in a textbox.
 ![image](https://github.com/user-attachments/assets/83bcb582-e173-4d12-bafd-5a91271aeeaa)
 
 When executed in batch using batch count, it takes out one line at a time, incrementing from the start line each time it is executed.
-You can use it like Webui(A1111)'s Prompts from file or textbox.
+You can use it like WebUI (A1111)'s Prompts from file or textbox.
 
 If you want to use wildcards, use "Prompts from textbox".
 
