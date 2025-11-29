@@ -140,7 +140,7 @@ Impact Pack のワイルドカードを展開するための単機能ノード�
 ## Parse Prompt (Full)
 
 コマンドライン形式の引数（例：`--width 512 --seed 123`）を含むプロンプト文字列を解析し、対応するすべてのパラメータを出力します。  
-WebUI(A1111) の Prompts from file or textbox と同様のフォーマットです。
+WebUI (A1111) の Prompts from file or textbox と同様のフォーマットです。
 
 ![image](doc/image/Parse_Prompt_Full.png)
 
