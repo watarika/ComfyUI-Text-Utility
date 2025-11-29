@@ -388,6 +388,23 @@ class ReplaceVariablesAndProcessWildcardNode:
         return (work_text.strip(),)
 
 class PromptParser:
+    """
+    Parses A1111-style prompts with command-line arguments.
+
+    Supports formats like:
+    - "beautiful scenery --seed 123 --width 512"
+    - "--prompt beautiful scenery --negative_prompt ugly --seed 123"
+
+    Args:
+        text (str): The prompt string to parse. Can be a plain prompt or include
+                   command-line style arguments.
+
+    Returns:
+        dict: A dictionary containing all parsed parameters and their default values.
+    """
+    # Maximum input length to prevent DoS attacks with extremely large strings
+    MAX_INPUT_LENGTH = 100000
+
     @staticmethod
     def parse(text):
         # デフォルト値の定義
@@ -416,6 +433,11 @@ class PromptParser:
             "do_not_save_samples": False,
             "do_not_save_grid": False,
         }
+
+        # 入力長を制限（DoS攻撃対策）
+        if len(text) > PromptParser.MAX_INPUT_LENGTH:
+            defaults["prompt"] = text[:PromptParser.MAX_INPUT_LENGTH]
+            return defaults
 
         # 行に "--" が含まれていない場合は、全体を prompt として扱う
         if "--" not in text:
@@ -451,6 +473,7 @@ class PromptParser:
                 i += 1
                 
                 if i >= len(args):
+                    print(f"Warning: Tag '--{tag}' is missing a value")
                     break
                 
                 # prompt, negative_prompt は次の -- が来るまで結合
@@ -460,13 +483,17 @@ class PromptParser:
                         values.append(args[i])
                         i += 1
                     
-                    # 既存の値がある場合は連結
+                    # 既存の値がある場合は連結（重複カンマを防ぐ）
                     current_val = parsed.get(tag, "")
                     new_val = " ".join(values)
                     if current_val:
-                        parsed[tag] = current_val + ", " + new_val
+                        # Split both values by comma, strip whitespace, remove empties, then join
+                        parts = [p.strip() for p in current_val.split(",") if p.strip()] + [p.strip() for p in new_val.split(",") if p.strip()]
+                        parsed[tag] = ", ".join(parts)
                     else:
-                        parsed[tag] = new_val
+                        # Sanitize new_val as well
+                        parts = [p.strip() for p in new_val.split(",") if p.strip()]
+                        parsed[tag] = ", ".join(parts)
                     
                     # ループのインクリメントは while 内で行われているのでここでは不要
                     continue
@@ -558,7 +585,8 @@ class ParsePromptCustomNode:
 
     # 大量の出力を許容するためにワイルドカードを多数定義
     # ComfyUIのバリデーションを回避するために AnyType を使用
-    # 要素数は ParsePromptFullNode の出力数に合わせる
+    # NOTE: This must match the number of outputs in ParsePromptFullNode.RETURN_NAMES.
+    # If ParsePromptFullNode.RETURN_NAMES is modified, this RETURN_TYPES count must also be updated.
     RETURN_TYPES = (AnyType("*"),) * len(ParsePromptFullNode.RETURN_NAMES)
     FUNCTION = "parse"
     CATEGORY = "text"
